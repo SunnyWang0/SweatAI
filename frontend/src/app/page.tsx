@@ -1,7 +1,6 @@
 "use client";
 
 import { ChatLayout } from "@/components/chat/chat-layout";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogDescription,
@@ -9,8 +8,8 @@ import {
   DialogTitle,
   DialogContent,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import UsernameForm from "@/components/username-form";
+import { ChatRequestOptions } from "ai";
 import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -21,16 +20,29 @@ export default function Home() {
     messages,
     input,
     handleInputChange,
+    handleSubmit,
     isLoading,
     error,
+    stop,
     setMessages,
     setInput,
-  } = useChat();
-  
+  } = useChat({
+    api: "/api/chat",
+    onResponse: (response) => {
+      if (response) {
+        setLoadingSubmit(false);
+      }
+    },
+    onError: (error) => {
+      setLoadingSubmit(false);
+      toast.error("An error occurred. Please try again.");
+    },
+  });
   const [chatId, setChatId] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const [loadingSubmit, setLoadingSubmit] = React.useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const [shoppingResults, setShoppingResults] = useState([]);
 
   useEffect(() => {
     if (messages.length < 1) {
@@ -45,43 +57,47 @@ export default function Home() {
       localStorage.setItem(`chat_${chatId}`, JSON.stringify(messages));
       window.dispatchEvent(new Event("storage"));
     }
-  }, [chatId, isLoading, error]);
+  }, [chatId, isLoading, error, messages]);
 
   useEffect(() => {
-    if (!localStorage.getItem("gemini_user")) {
+    if (!localStorage.getItem("ollama_user")) {
       setOpen(true);
     }
   }, []);
 
-  const addMessage = (message: any) => {
-    setMessages([...messages, message]);
+  const addMessage = (message: Message) => {
+    const newMessages = [...messages, message];
+    setMessages(newMessages);
     window.dispatchEvent(new Event("storage"));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoadingSubmit(true);
 
-    const userMessage = { role: "user", content: input, id: chatId };
+    const userMessage: Message = { role: "user", content: input, id: chatId };
     addMessage(userMessage);
     setInput("");
 
     try {
-      const response = await fetch('http://localhost:5000/chat', {
-        method: 'POST',
+      const response = await fetch("/api/chat", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Failed to fetch response");
       }
 
       const data = await response.json();
-      const assistantMessage = { role: "assistant", content: data.response, id: chatId };
+      const assistantMessage: Message = { role: "assistant", content: data.response, id: chatId };
       addMessage(assistantMessage);
+      setShoppingResults(data.shopping_results);
     } catch (error) {
       toast.error("An error occurred. Please try again.");
     } finally {
@@ -89,15 +105,15 @@ export default function Home() {
     }
   };
 
-  const onOpenChange = (isOpen: boolean) => { 
-    const username = localStorage.getItem("gemini_user")
+  const onOpenChange = (isOpen: boolean) => {
+    const username = localStorage.getItem("ollama_user")
     if (username) return setOpen(isOpen)
 
-    localStorage.setItem("gemini_user", "Anonymous")
+    localStorage.setItem("ollama_user", "Anonymous")
     window.dispatchEvent(new Event("storage"))
     setOpen(isOpen)
   }
-  
+
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -106,19 +122,21 @@ export default function Home() {
           messages={messages}
           input={input}
           handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
+          handleSubmit={onSubmit}
           isLoading={isLoading}
           loadingSubmit={loadingSubmit}
           error={error}
+          stop={stop}
           navCollapsedSize={10}
           defaultLayout={[30, 160]}
           formRef={formRef}
           setMessages={setMessages}
           setInput={setInput}
+          // shoppingResults={shoppingResults}
         />
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">
-            <DialogTitle>Welcome to Gemini Chat!</DialogTitle>
+            <DialogTitle>Welcome to Ollama!</DialogTitle>
             <DialogDescription>
               Enter your name to get started. This is just to personalize your
               experience.

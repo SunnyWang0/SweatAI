@@ -1,35 +1,35 @@
 export const INITIAL_QUESTIONS = [
   {
-    content: "What is the capital of France?",
+    content: "What are the best pre-workouts for endurance training?",
   },
   {
-    content: 'Who wrote "To Kill a Mockingbird"?',
+    content: 'Are there any good protein powders for muscle growth?',
   },
   {
-    content: "What is the boiling point of water in Celsius?",
+    content: "Benefits of beta-alanine in a pre-workout",
   },
   {
-    content: "How many planets are there in our solar system?",
+    content: "Are pre-workouts that don't have caffeine?",
   },
   {
-    content: "What year did the Titanic sink?",
+    content: "Pre-workouts that give me energy without making me jittery",
   },
   {
-    content: "Who painted the Mona Lisa?",
+    content: "What are the benefits of BCAAs?",
   },
   {
-    content: "What is the square root of 144?",
+    content: "I need a good post-workout protein powder.",
   },
   {
-    content: "Who is the current President of the United States?",
+    content: "What supplements are good for muscle recovery?",
   },
   {
-    content: "What is the tallest mountain in the world?",
+    content: "What's the best way to take creatine?",
   },
   {
-    content: "What is the chemical symbol for gold?",
+    content: "What supplement stack can I take for muslce growth?",
   },
   {
-    content: "Who discovered penicillin?",
+    content: "Low-carb protein powder?",
   },
 ];

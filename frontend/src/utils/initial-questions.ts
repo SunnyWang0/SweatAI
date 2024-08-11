@@ -9,7 +9,7 @@ export const INITIAL_QUESTIONS = [
     content: "Benefits of beta-alanine in a pre-workout",
   },
   {
-    content: "Are pre-workouts that don't have caffeine?",
+    content: "What ares some pre-workouts that don't have caffeine?",
   },
   {
     content: "Pre-workouts that give me energy without making me jittery",

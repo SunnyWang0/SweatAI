@@ -1,25 +1,51 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
-    const response = await fetch(`${BACKEND_URL}/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+  const body = await req.json();
+  const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+  console.log("Sending request to:", `${BACKEND_URL}/chat`);
+  
+  const response = await fetch(`${BACKEND_URL}/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch from FastAPI');
-    }
+  console.log("Response status:", response.status);
+  console.log("Response headers:", response.headers);
 
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error in chat route:", error);
-    return NextResponse.json({ error: 'An error occurred while processing your request' }, { status: 500 });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch from FastAPI: ${response.status} ${response.statusText}`);
   }
+
+  // Set up streaming response
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const reader = response.body?.getReader();
+      if (!reader) {
+        controller.close();
+        return;
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        controller.enqueue(encoder.encode(new TextDecoder().decode(value)));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 }

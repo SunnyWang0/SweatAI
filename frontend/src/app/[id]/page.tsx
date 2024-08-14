@@ -1,14 +1,14 @@
 "use client";
 
-import { ChatLayout } from "@/components/chat/chat-layout";
+import { ChatLayout } from "../../components/chat/chat-layout";
 import {
   Dialog,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogContent,
-} from "@/components/ui/dialog";
-import UsernameForm from "@/components/username-form";
+} from "../../components/ui/dialog";
+import UsernameForm from "../../components/username-form";
 import { ChatRequestOptions } from "ai";
 import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState } from "react";
@@ -74,11 +74,11 @@ export default function Home() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoadingSubmit(true);
-
+  
     const userMessage: Message = { role: "user", content: input, id: chatId };
     addMessage(userMessage);
     setInput("");
-
+  
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -89,15 +89,32 @@ export default function Home() {
           messages: [...messages, userMessage],
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Failed to fetch response");
       }
-
-      const data = await response.json();
-      const assistantMessage: Message = { role: "assistant", content: data.response, id: chatId };
+  
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+  
+      if (!reader) {
+        throw new Error("No reader available");
+      }
+  
+      let assistantMessage: Message = { role: "assistant", content: "", id: chatId };
       addMessage(assistantMessage);
-      setShoppingResults(data.shopping_results);
+  
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        const chunk = decoder.decode(value);
+        assistantMessage.content += chunk;
+        setMessages([...messages, userMessage, { ...assistantMessage }]);
+      }
+
+  
     } catch (error) {
       toast.error("An error occurred. Please try again.");
     } finally {
@@ -131,8 +148,10 @@ export default function Home() {
           defaultLayout={[30, 160]}
           formRef={formRef}
           setMessages={setMessages}
-          setInput={setInput}
-          // shoppingResults={shoppingResults}
+          setInput={setInput} 
+          onFileUpload={function (event: React.ChangeEvent<HTMLInputElement>): void {
+            throw new Error("Function not implemented.");
+          } } pdfFile={null}          // shoppingResults={shoppingResults}
         />
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">

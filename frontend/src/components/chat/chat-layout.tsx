@@ -8,8 +8,11 @@ import {
 } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "../sidebar";
-import { Message } from "ai/react";
+import { Message, useChat } from "ai/react";
 import Chat, { ChatProps } from "./chat";
+import ChatList from "./chat-list";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { RightPanel } from "../rightPanel";
 
 interface ChatLayoutProps {
   defaultLayout: number[] | undefined;
@@ -17,6 +20,8 @@ interface ChatLayoutProps {
   navCollapsedSize: number;
   chatId: string;
   setMessages: (messages: Message[]) => void;
+  onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  pdfFile: File | null;
 }
 
 type MergedProps = ChatLayoutProps & ChatProps;
@@ -37,6 +42,8 @@ export function ChatLayout({
   formRef,
   setMessages,
   setInput,
+  onFileUpload,
+  pdfFile,
 }: MergedProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
@@ -46,9 +53,13 @@ export function ChatLayout({
       setIsMobile(window.innerWidth <= 1023);
     };
 
+    // Initial check
     checkScreenWidth();
+
+    // Event listener for screen width changes
     window.addEventListener("resize", checkScreenWidth);
 
+    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener("resize", checkScreenWidth);
     };
@@ -115,6 +126,15 @@ export function ChatLayout({
           isMobile={isMobile}
           setInput={setInput}
         />
+      </ResizablePanel>
+      <ResizableHandle className={cn("hidden md:flex")} withHandle />
+      <ResizablePanel
+        defaultSize={defaultLayout[2] || 30} // Adjust this value as needed
+        minSize={isMobile ? 0 : 12}
+        maxSize={isMobile ? 0 : 30}
+        className={cn("hidden md:block")}
+      >
+        <RightPanel isCollapsed={false} isMobile={isMobile} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

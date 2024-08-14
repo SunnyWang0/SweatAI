@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { ChatProps } from "./chat";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "../ui/button";
+import { Button } from "../ui/button";
 import TextareaAutosize from "react-textarea-autosize";
-import { motion, AnimatePresence } from "framer-motion";
-import { ImageIcon, PaperPlaneIcon, StopIcon } from "@radix-ui/react-icons";
-import { Mic, SendHorizonal } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import { PaperPlaneIcon, StopIcon } from "@radix-ui/react-icons";
+import { Mic, SendHorizonal, Upload } from "lucide-react";
 import useSpeechToText from "@/app/hooks/useSpeechRecognition";
 
 export default function ChatBottombar({
@@ -25,19 +23,17 @@ export default function ChatBottombar({
   const [message, setMessage] = React.useState(input);
   const [isMobile, setIsMobile] = React.useState(false);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
 
   React.useEffect(() => {
     const checkScreenWidth = () => {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    // Initial check
     checkScreenWidth();
-
-    // Event listener for screen width changes
     window.addEventListener("resize", checkScreenWidth);
 
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener("resize", checkScreenWidth);
     };
@@ -78,17 +74,53 @@ export default function ChatBottombar({
     }
   }, [isLoading]);
 
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIsUploading(true);
+      try {
+        // Implement your file upload logic here
+        console.log("Uploading file:", file.name);
+        // You'll need to add the actual file upload implementation
+        // For example:
+        // const formData = new FormData();
+        // formData.append('file', file);
+        // await fetch('/api/upload', { method: 'POST', body: formData });
+        
+        // After successful upload:
+        console.log("File uploaded successfully");
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
   return (
     <div className="p-4 pb-7 flex justify-between w-full items-center gap-2">
       <AnimatePresence initial={false}>
         <div className="w-full items-center flex relative gap-2">
           <div className="absolute left-3 z-10">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+              accept=".pdf,.doc,.docx,.txt"
+            />
             <Button
               className="shrink-0 rounded-full"
               variant="ghost"
               size="icon"
+              onClick={triggerFileUpload}
+              disabled={isUploading}
             >
-              <ImageIcon className="w-5 h-5" />
+              <Upload className="w-5 h-5" />
             </Button>
           </div>
           <form
@@ -107,7 +139,7 @@ export default function ChatBottombar({
               placeholder={
                 !isListening ? "Enter your prompt here" : "Listening"
               }
-              className=" max-h-24 px-14 bg-accent py-[22px] text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full  rounded-full flex items-center h-16 resize-none overflow-hidden dark:bg-card"
+              className="max-h-24 px-14 bg-accent py-[22px] text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full  rounded-full flex items-center h-16 resize-none overflow-hidden dark:bg-card"
             />
             {!isLoading ? (
               <div className="flex absolute right-3 items-center">

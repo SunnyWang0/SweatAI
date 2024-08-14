@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { Toaster } from "@/components/ui/sonner"
+import { ThemeProvider } from "../providers/theme-provider";
+import { Toaster } from "../components/ui/sonner"
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+} from '@clerk/nextjs'
+import { RedirectToSignIn } from "@clerk/nextjs";
+import { dark } from '@clerk/themes';
+import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,13 +32,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark">
-          {children}
-        <Toaster />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider appearance={{ baseTheme: dark }}>
+      <html lang="en">
+        <body className={inter.className}>
+          <ThemeProvider attribute="class" defaultTheme="dark">
+            <SignedIn>
+              {children}
+            </SignedIn>
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

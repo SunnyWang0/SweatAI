@@ -2,16 +2,15 @@
 
 import Link from "next/link";
 import { MoreHorizontal, SquarePen, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "../lib/utils";
+import { Button, buttonVariants } from "../components/ui/button";
 import { Message } from "ai/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import SidebarSkeleton from "./sidebar-skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import UserSettings from "./user-settings";
-import { useLocalStorageData } from "@/app/hooks/useLocalStorageData";
-import { ScrollArea, Scrollbar } from "@radix-ui/react-scroll-area";
+import { useLocalStorageData } from "../app/hooks/useLocalStorageData";
 
 import {
   Dialog,
@@ -28,6 +27,7 @@ import {
 } from "./ui/dropdown-menu";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 interface SidebarProps {
   isCollapsed: boolean;

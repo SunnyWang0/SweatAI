@@ -1,19 +1,20 @@
 "use client";
 
-import { ChatLayout } from "../../components/chat/chat-layout";
+import { ChatLayout } from "@/components/chat/chat-layout";
 import {
   Dialog,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogContent,
-} from "../../components/ui/dialog";
-import UsernameForm from "../../components/username-form";
+} from "@/components/ui/dialog";
+import UsernameForm from "@/components/username-form";
 import { ChatRequestOptions } from "ai";
 import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { ShoppingResult } from '@/components/chat/shopping-results';
 
 export default function Home() {
   const {
@@ -35,14 +36,14 @@ export default function Home() {
     },
     onError: (error) => {
       setLoadingSubmit(false);
-      toast.error("An error occurred. Please try again.");
+      toast.error("Ha ocurrido un error. Por favor, inténtalo de nuevo.");
     },
   });
   const [chatId, setChatId] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const [loadingSubmit, setLoadingSubmit] = React.useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const [shoppingResults, setShoppingResults] = useState([]);
+  const [shoppingResults, setShoppingResults] = useState<ShoppingResult[]>([]);
 
   useEffect(() => {
     if (messages.length < 1) {
@@ -74,11 +75,11 @@ export default function Home() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoadingSubmit(true);
-  
+
     const userMessage: Message = { role: "user", content: input, id: chatId };
     addMessage(userMessage);
     setInput("");
-  
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -89,47 +90,82 @@ export default function Home() {
           messages: [...messages, userMessage],
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch response");
       }
-  
+
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
-  
+
       if (!reader) {
         throw new Error("No reader available");
       }
-  
+
       let assistantMessage: Message = { role: "assistant", content: "", id: chatId };
       addMessage(assistantMessage);
-  
+
+      let newShoppingResults: ShoppingResult[] = [];
+
       while (true) {
         const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
+        if (done) break;
+        
         const chunk = decoder.decode(value);
-        assistantMessage.content += chunk;
-        setMessages([...messages, userMessage, { ...assistantMessage }]);
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+        
+        for (const line of lines) {
+          try {
+            const data = JSON.parse(line);
+            if (data.type === 'assistant_response') {
+              assistantMessage.content += data.content;
+              setMessages([...messages, userMessage, { ...assistantMessage }]);
+            } else if (data.type === 'shopping_result') {
+              newShoppingResults.push(data.content);
+            }
+          } catch (error) {
+            console.error("Error parsing JSON:", error);
+          }
+        }
       }
 
-  
+      if (newShoppingResults.length > 0) {
+        setShoppingResults(newShoppingResults);
+      }
+
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      toast.error("Ha ocurrido un error. Por favor, inténtalo de nuevo.");
     } finally {
       setLoadingSubmit(false);
     }
   };
 
   const onOpenChange = (isOpen: boolean) => {
-    const username = localStorage.getItem("ollama_user")
-    if (username) return setOpen(isOpen)
+    const username = localStorage.getItem("ollama_user");
+    if (username) return setOpen(isOpen);
 
-    localStorage.setItem("ollama_user", "Anonymous")
-    window.dispatchEvent(new Event("storage"))
-    setOpen(isOpen)
-  }
+    localStorage.setItem("ollama_user", "Anonymous");
+    window.dispatchEvent(new Event("storage"));
+    setOpen(isOpen);
+  };
+
+  const parseShoppingResults = (data: string): ShoppingResult[] => {
+    const results: ShoppingResult[] = [];
+    const regex = /Product Information:[\s\S]*?Title:\s*([\s\S]*?)(?:Price:|$)[\s\S]*?Price:\s*([\s\S]*?)(?:Link:|$)[\s\S]*?Link:\s*([\s\S]*?)(?:Thumbnail:|$)[\s\S]*?Thumbnail:\s*([\s\S]*?)(?:Formula:|$)[\s\S]*?Formula:\s*([\s\S]*?)(?=Product Information:|$)/gi;
+    let match;
+
+    while ((match = regex.exec(data)) !== null) {
+      results.push({
+        title: match[1]?.trim() || '',
+        price: match[2]?.trim() || '',
+        link: match[3]?.trim() || '',
+        thumbnail: match[4]?.trim() || '',
+        formula: match[5]?.trim().replace(/•/g, '\n•').trim() || ''
+      });
+    }
+
+    return results;
+  };
 
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
@@ -148,10 +184,8 @@ export default function Home() {
           defaultLayout={[30, 160]}
           formRef={formRef}
           setMessages={setMessages}
-          setInput={setInput} 
-          onFileUpload={function (event: React.ChangeEvent<HTMLInputElement>): void {
-            throw new Error("Function not implemented.");
-          } } pdfFile={null}          // shoppingResults={shoppingResults}
+          setInput={setInput}
+          shoppingResults={shoppingResults}
         />
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">

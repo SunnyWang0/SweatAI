@@ -2,11 +2,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-import google.generativeai as genai
 import os
 import requests
 import json
 import uvicorn
+from fastapi.responses import StreamingResponse
+import asyncio
+import anthropic
 
 app = FastAPI()
 
@@ -19,86 +21,77 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# Initialize the Gemini models
+# Initialize the Claude client
+claude_client = anthropic.Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
+
+# Initialize the Claude models
 def init_models():
-    genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
-    
-    shopper = genai.GenerativeModel('gemini-1.5-flash')
-    shopper_chat = shopper.start_chat(history=[])
-    
-    shopper_generation_config = genai.GenerationConfig(
-        temperature=0.7, 
-        top_k=40,
-        top_p=0.95,
-        max_output_tokens=2048,
-    )
-    shopper_chat.generation_config = shopper_generation_config
-    
-    system_message = """
-    You are Cosmo, a fitness coach that assist users in shopping for supplement items online with tailored recommendations. Learn about users' workout preferences to suggest products aligned with their needs. For preworkout selection, inquire about workout style and preferences to determine suitable formulations. Conduct thorough research, ask follow-up questions, and refine searches based on user preferences, including desired or avoided ingredients.
+    shopper_system_message = """
+    You are Cosmo, a fitness coach and supplement shopping assistant. Your primary purpose is to help users find suitable supplements and fitness products while answering their questions. Follow these guidelines:
 
-    Provide detailed explanations for recommended ingredients, their benefits and what it feels like for the user. Respond directly to user requests without unnecessary affirmations.
+    1. Analyze user's needs, preferences, and questions about supplements, ingredients, or fitness products.
+    2. Respond to users:
+    a. Be direct and concise.
+    b. Ask follow-ups if needed.
+    c. Explain ingredients and benefits when prompted.
+    d. Tailor recommendations to user's workout style and goals.
+    e. Use bullet points for lists: • Item 1 • Item 2 • Item 3
+    f. Minimize line breaks.
 
-    Generate search query terms ONLY when the user has provided enough information to narrow down the product search. Do NOT generate query terms if:
-    1. The user is asking general questions about products or ingredients
-    2. The user is seeking clarification on a topic
-    3. The conversation hasn't progressed to a point where specific product recommendations are appropriate
+    3. After your response, silently generate a search query:
+    a. Format: <<QUERY>>term1, term2, term3
+    b. Query terms should be precise, reflect preferences, and use positive terms.
+    c. Include specific recommended ingredients, product types, or qualities.
+    d. Do not mention or explain the query to the user.
 
-    When appropriate to generate a search query, use the delimiter '<<QUERY>>' followed by a concise, non-repetitive list of search terms based on the user's preferences. This query should:
-    1. Be as short and precise as possible
-    2. Reflect workout preferences in terms of preworkout ingredients
-    3. Use positive or alternative terms instead of negatives (e.g., "caffeine-free" instead of "no caffeine", "jitter-free" instead of "no jitters")
-    4. Not contain questions for the user
-    5. Not be visible to the user
+    4. For unrelated inputs:
+    a. Redirect the conversation to fitness, supplements, or healthy living topics.
+    b. Encourage fitness/supplement-related questions.
 
-    Example format (only when appropriate):
-    [Your response to the user]
-    <<QUERY>>caffeine-free preworkout, beta-alanine, citrulline malate, evening workout
+    5. Focus on recommending ingredients, product types, or qualities to look for, not specific brands.
 
-    If no query is needed, simply end your response without the <<QUERY>> section.
+    6. Ensure all your response is before the <<QUERY>> tag, and only query terms follow it.
 
-    If asked about your capabilities, explain that you're a personalized fitness shopping assistant and encourage users to specify products they're interested in buying.
+    Remember, your role is to provide helpful information and recommendations to users about fitness and supplements, while seamlessly facilitating product searches behind the scenes.
     """
-    
-    shopper_chat.send_message(system_message)
-    
-    scraper = genai.GenerativeModel('gemini-1.5-flash')
-    scraper_chat = scraper.start_chat(history=[])
-    scraper_generation_config = genai.GenerationConfig(
-        temperature=0.1,  # Lower temperature for more focused, precise outputs
-        top_k=10,
-        top_p=0.7,
-        max_output_tokens=1024,
-    )
-    scraper_chat.generation_config = scraper_generation_config
     
     scraper_system_message = """
-    You are an AI assistant specialized in extracting specific information from scraped website content about fitness supplements. Your task is to analyze the provided text and extract ONLY the list of ingredients from the product's formula or composition.
+    You are an AI assistant extracting information from scraped fitness product content. Analyze text and images, then extract relevant details based on product type. Your output will be used directly in a shopping results component.
 
-    Instructions:
-    1. Identify the section that lists the product's ingredients or formula.
-    2. Extract each ingredient along with its amount (if provided).
-    3. Present the information as a numbered list.
-    4. Include ONLY the ingredients and their amounts. Do not include any additional information or descriptions.
-    5. If an ingredient has a trademark symbol (®, ™), include it.
-    6. Maintain the exact spelling and capitalization as presented in the original text.
+    1. Identify the product type (supplement, equipment, apparel, etc.).
 
-    Your output should look like this:
+    2. For supplements and food items:
+       a. Extract ingredients and amounts from the formula section.
+       b. Present as a numbered list.
+       c. Include only ingredients and amounts, no additional information.
+       d. Retain trademark symbols (®, ™) and original spelling/capitalization.
 
-    1. Ingredient Name (Amount)
-    2. Another Ingredient (Amount)
-    3. Third Ingredient (Amount)
+       Output format:
+       1. Ingredient Name (Amount)
+       2. Another Ingredient (Amount)
+       3. Third Ingredient
 
-    If no amount is provided for an ingredient, simply list the ingredient name.
+    3. For non-supplement products:
+       a. Generate concise bullet-point description.
+       b. Include specific details relevant for purchasing decisions.
+       c. Use information from both text and images.
+       d. Focus on key features, specifications, materials, and unique selling points.
 
-    Do not include any other text, explanations, or formatting beyond this simple numbered list.
+       Output format:
+       • Key Feature 1
+       • Key Feature 2
+       • Material/Construction
+       • Dimensions/Size information
+       • Unique characteristics
+
+    4. Only print product details/formula. Omit general statements or obvious information.
+    5. Do not include any text, explanations, or formatting beyond the specified output format for each product type.
+    6. Ensure your output is consistent and can be easily parsed by the shopping-results component.
     """
     
-    scraper_chat.send_message(scraper_system_message)
-    
-    return shopper_chat, scraper_chat
+    return shopper_system_message, scraper_system_message
 
-shopper_chat, scraper_chat = init_models()
+shopper_system_message, scraper_system_message = init_models()
 
 def get_request_google_shopping(query):
     url = "https://www.searchapi.io/api/v1/search"
@@ -137,37 +130,51 @@ class ShoppingResult(BaseModel):
     thumbnail: str
     formula: str
 
-class ChatResponse(BaseModel):
-    response: str
-    shopping_results: Optional[List[ShoppingResult]] = None
-
-@app.post("/chat", response_model=ChatResponse)
+@app.post("/chat")
 async def chat(request: ChatRequest):
     messages = request.messages
     
-    # Process messages and get response from Gemini
-    response = shopper_chat.send_message(messages[-1].content)
-    response_text = response.text
-    
-    parts = response_text.split('<<QUERY>>')
-    response_text = parts[0]
-    query = parts[1] if len(parts) > 1 else ""
-    
-    results = []
-    if query:
-        shopping_results = get_request_google_shopping(query)
-        if shopping_results:
-            for item in shopping_results[:1]:  # Only process the first item
-                formula = scraper_chat.send_message(scrape_jina(item.get('link'))).text
-                results.append(ShoppingResult(
-                    title=item.get('title'),
-                    price=item.get('price'),
-                    link=item.get('link'),
-                    thumbnail=item.get('thumbnail'),
-                    formula=formula
-                ))
-    
-    return ChatResponse(response=response_text, shopping_results=results)
+    async def generate():
+        # Process messages and get response from Claude
+        claude_messages = [{"role": msg.role, "content": msg.content} for msg in messages]
+        response = claude_client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=2048,
+            temperature=0.6,
+            system=shopper_system_message,
+            messages=claude_messages
+        )
+        response_text = response.content[0].text.strip()
+        parts = response_text.split('<<QUERY>>')
+        assistant_response = parts[0].strip()
+        query = parts[1] if len(parts) > 1 else ""
+        
+        # Yield the initial response
+        yield json.dumps({"type": "assistant_response", "content": assistant_response}) + "\n"
+
+        if query:
+            shopping_results = get_request_google_shopping(query)
+            if shopping_results:
+                for item in shopping_results[:1]:  # Only process the first item
+                    scraped_content = scrape_jina(item.get('link'))
+                    formula_response = claude_client.messages.create(
+                        model="claude-3-haiku-20240307",
+                        max_tokens=1024,
+                        temperature=0.1,
+                        system=scraper_system_message,
+                        messages=[{"role": "user", "content": f"Here is the scraped content you need to analyze:\n\n<scraped_content>\n{scraped_content}\n</scraped_content>"}]
+                    )
+                    formula = formula_response.content[0].text.strip()
+                    result = ShoppingResult(
+                        title=item.get('title'),
+                        price=item.get('price'),
+                        link=item.get('link'),
+                        thumbnail=item.get('thumbnail'),
+                        formula=formula
+                    )
+                    yield json.dumps({"type": "shopping_result", "content": result.dict()}) + "\n"
+
+    return StreamingResponse(generate(), media_type="application/x-ndjson")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -48,14 +48,13 @@ export function Sidebar({
   const [localChats, setLocalChats] = useState<
     { chatId: string; messages: Message[] }[]
   >([]);
-  const localChatss = useLocalStorageData("chat_", []);
-  const [selectedChatId, setSselectedChatId] = useState<string | null>(null);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     if (chatId) {
-      setSselectedChatId(chatId);
+      setSelectedChatId(chatId);
     }
 
     setLocalChats(getLocalstorageChats());
@@ -66,7 +65,7 @@ export function Sidebar({
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, []);
+  }, [chatId]);
 
   const getLocalstorageChats = (): {
     chatId: string;
@@ -78,17 +77,20 @@ export function Sidebar({
 
     if (chats.length === 0) {
       setIsLoading(false);
+      return [];
     }
 
-    // Map through the chats and return an object with chatId and messages
     const chatObjects = chats.map((chat) => {
       const item = localStorage.getItem(chat);
-      return item
-        ? { chatId: chat, messages: JSON.parse(item) }
-        : { chatId: "", messages: [] };
-    });
+      try {
+        const messages = item ? JSON.parse(item) : [];
+        return { chatId: chat, messages };
+      } catch (error) {
+        console.error(`Error parsing chat ${chat}:`, error);
+        return { chatId: chat, messages: [] };
+      }
+    }).filter(chat => chat.messages.length > 0);
 
-    // Sort chats by the createdAt date of the first message of each chat
     chatObjects.sort((a, b) => {
       const aDate = new Date(a.messages[0].createdAt);
       const bDate = new Date(b.messages[0].createdAt);
@@ -102,6 +104,10 @@ export function Sidebar({
   const handleDeleteChat = (chatId: string) => {
     localStorage.removeItem(chatId);
     setLocalChats(getLocalstorageChats());
+    if (selectedChatId === chatId) {
+      router.push("/");
+      setMessages([]);
+    }
   };
 
   return (

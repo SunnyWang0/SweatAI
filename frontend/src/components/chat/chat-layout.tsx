@@ -14,14 +14,21 @@ import ChatList from "./chat-list";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { RightPanel } from "../rightPanel";
 
+interface ShoppingResult {
+  title: string;
+  price: string;
+  link: string;
+  thumbnail: string;
+  formula: string;
+}
+
 interface ChatLayoutProps {
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
   chatId: string;
   setMessages: (messages: Message[]) => void;
-  onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  pdfFile: File | null;
+  shoppingResults?: ShoppingResult[];
 }
 
 type MergedProps = ChatLayoutProps & ChatProps;
@@ -42,8 +49,7 @@ export function ChatLayout({
   formRef,
   setMessages,
   setInput,
-  onFileUpload,
-  pdfFile,
+  shoppingResults,
 }: MergedProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
@@ -125,6 +131,7 @@ export function ChatLayout({
           formRef={formRef}
           isMobile={isMobile}
           setInput={setInput}
+          shoppingResults={shoppingResults}
         />
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />

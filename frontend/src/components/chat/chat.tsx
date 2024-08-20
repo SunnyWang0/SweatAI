@@ -5,6 +5,14 @@ import ChatBottombar from "./chat-bottombar";
 import { Message } from "ai/react";
 import { ChatRequestOptions } from "ai";
 
+interface ShoppingResult {
+  title: string;
+  price: string;
+  link: string;
+  thumbnail: string;
+  formula: string;
+}
+
 export interface ChatProps {
   chatId?: string;
   messages: Message[];
@@ -21,6 +29,7 @@ export interface ChatProps {
   formRef: React.RefObject<HTMLFormElement>;
   isMobile?: boolean;
   setInput?: React.Dispatch<React.SetStateAction<string>>;
+  shoppingResults?: ShoppingResult[];
 }
 
 export default function Chat({
@@ -36,13 +45,14 @@ export default function Chat({
   formRef,
   isMobile,
   setInput,
+  shoppingResults,
 }: ChatProps) {
+  console.log("Chat component shoppingResults:", shoppingResults);
   return (
     <div className="flex flex-col justify-between w-10/12 h-full ">
       <ChatTopbar
         chatId={chatId}
         messages={messages}
-        
       />
 
       <ChatList
@@ -56,6 +66,7 @@ export default function Chat({
         stop={stop}
         formRef={formRef}
         isMobile={isMobile}
+        shoppingResults={shoppingResults}
       />
 
       <ChatBottombar

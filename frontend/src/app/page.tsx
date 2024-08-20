@@ -14,6 +14,7 @@ import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { ShoppingResult } from '../components/chat/shopping-results';
 
 export default function Home() {
   const {
@@ -42,7 +43,7 @@ export default function Home() {
   const [open, setOpen] = React.useState(false);
   const [loadingSubmit, setLoadingSubmit] = React.useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const [shoppingResults, setShoppingResults] = useState([]);
+  const [shoppingResults, setShoppingResults] = useState<ShoppingResult[]>([]);
 
   useEffect(() => {
     if (messages.length < 1) {
@@ -74,11 +75,11 @@ export default function Home() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoadingSubmit(true);
-  
+
     const userMessage: Message = { role: "user", content: input, id: chatId };
     addMessage(userMessage);
     setInput("");
-  
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -89,32 +90,44 @@ export default function Home() {
           messages: [...messages, userMessage],
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch response");
       }
-  
+
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
-  
+
       if (!reader) {
         throw new Error("No reader available");
       }
-  
+
       let assistantMessage: Message = { role: "assistant", content: "", id: chatId };
-      addMessage(assistantMessage);
-  
+      let newShoppingResults: ShoppingResult[] = [];
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
           break;
         }
         const chunk = decoder.decode(value);
-        assistantMessage.content += chunk;
-        setMessages([...messages, userMessage, { ...assistantMessage }]);
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+        
+        for (const line of lines) {
+          const data = JSON.parse(line);
+          if (data.type === 'assistant_response') {
+            assistantMessage.content += data.content;
+            setMessages([...messages, userMessage, { ...assistantMessage }]);
+          } else if (data.type === 'shopping_result') {
+            newShoppingResults.push(data.content);
+          }
+        }
       }
 
-  
+      if (newShoppingResults.length > 0) {
+        setShoppingResults(newShoppingResults);
+      }
+
     } catch (error) {
       toast.error("An error occurred. Please try again.");
     } finally {
@@ -130,6 +143,30 @@ export default function Home() {
     window.dispatchEvent(new Event("storage"))
     setOpen(isOpen)
   }
+
+  const parseShoppingResults = (data: string): ShoppingResult[] => {
+    const results: ShoppingResult[] = [];
+    const productRegex = /Product Information:([\s\S]*?)(?=Product Information:|$)/gi;
+    const fieldRegex = /(Title|Price|Link|Thumbnail|Formula):\s*([\s\S]*?)(?=(?:Title|Price|Link|Thumbnail|Formula):|$)/gi;
+
+    let productMatch;
+    while ((productMatch = productRegex.exec(data)) !== null) {
+      const productInfo = productMatch[1];
+      const product: Partial<ShoppingResult> = {};
+
+      let fieldMatch;
+      while ((fieldMatch = fieldRegex.exec(productInfo)) !== null) {
+        const [, field, value] = fieldMatch;
+        product[field.toLowerCase() as keyof ShoppingResult] = value.trim();
+      }
+
+      if (Object.keys(product).length > 0) {
+        results.push(product as ShoppingResult);
+      }
+    }
+
+    return results;
+  };
 
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
@@ -149,9 +186,7 @@ export default function Home() {
           formRef={formRef}
           setMessages={setMessages}
           setInput={setInput} 
-          onFileUpload={function (event: React.ChangeEvent<HTMLInputElement>): void {
-            throw new Error("Function not implemented.");
-          } } pdfFile={null}          // shoppingResults={shoppingResults}
+          shoppingResults={shoppingResults}
         />
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">

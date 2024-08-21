@@ -14,7 +14,7 @@ import ChatList from "./chat-list";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { RightPanel } from "../rightPanel";
 
-interface ShoppingResult {
+export interface ShoppingResult {
   title: string;
   price: string;
   link: string;

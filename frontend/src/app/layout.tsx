@@ -15,7 +15,7 @@ import React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Cosmo",
+  title: "SweatAI",
   description: "Personal Supplement Shopping Assistant",
 };
 

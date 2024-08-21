@@ -33,7 +33,7 @@ export default function ChatTopbar({ chatId, messages }: ChatTopbarProps) {
           </SheetContent>
         </Sheet>
       </div>
-      <h1 className="text-2xl font-bold">Cosmo</h1>
+      <h1 className="text-2xl font-bold">Sweat</h1>
       <div className="absolute right-0 mt-2">
       </div>
     </div>

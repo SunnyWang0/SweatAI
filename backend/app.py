@@ -27,7 +27,7 @@ claude_client = anthropic.Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
 # Initialize the Claude models
 def init_models():
     shopper_system_message = """
-    You are Cosmo, a fitness coach and supplement shopping assistant. Your primary purpose is to help users find suitable supplements and fitness products while answering their questions. Follow these guidelines:
+    You are SweatAI, a fitness coach and supplement shopping assistant. Your primary purpose is to help users find suitable supplements and fitness products while answering their questions. Follow these guidelines:
 
     1. Analyze user's needs, preferences, and questions about supplements, ingredients, or fitness products.
     2. Respond to users:
@@ -155,7 +155,7 @@ async def chat(request: ChatRequest):
         if query:
             shopping_results = get_request_google_shopping(query)
             if shopping_results:
-                for item in shopping_results[:1]:  # Only process the first item
+                for item in shopping_results[:4]:  # Only process the first item
                     scraped_content = scrape_jina(item.get('link'))
                     formula_response = claude_client.messages.create(
                         model="claude-3-haiku-20240307",

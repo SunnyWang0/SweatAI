@@ -1,1 +1,1 @@
-# cosmo
+# SweatAI

@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import TextareaAutosize from "react-textarea-autosize";
 import { AnimatePresence } from "framer-motion";
 import { PaperPlaneIcon, StopIcon } from "@radix-ui/react-icons";
-import { Mic, SendHorizonal, Upload } from "lucide-react";
+import { Mic, SendHorizonal } from "lucide-react";
 import useSpeechToText from "@/app/hooks/useSpeechRecognition";
 
 export default function ChatBottombar({
@@ -23,8 +23,6 @@ export default function ChatBottombar({
   const [message, setMessage] = React.useState(input);
   const [isMobile, setIsMobile] = React.useState(false);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = React.useState(false);
 
   React.useEffect(() => {
     const checkScreenWidth = () => {
@@ -74,55 +72,10 @@ export default function ChatBottombar({
     }
   }, [isLoading]);
 
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setIsUploading(true);
-      try {
-        // Implement your file upload logic here
-        console.log("Uploading file:", file.name);
-        // You'll need to add the actual file upload implementation
-        // For example:
-        // const formData = new FormData();
-        // formData.append('file', file);
-        // await fetch('/api/upload', { method: 'POST', body: formData });
-        
-        // After successful upload:
-        console.log("File uploaded successfully");
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      } finally {
-        setIsUploading(false);
-      }
-    }
-  };
-
   return (
     <div className="p-4 pb-7 flex justify-between w-full items-center gap-2">
       <AnimatePresence initial={false}>
         <div className="w-full items-center flex relative gap-2">
-          <div className="absolute left-3 z-10">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-              style={{ display: "none" }}
-              accept=".pdf,.doc,.docx,.txt"
-            />
-            <Button
-              className="shrink-0 rounded-full"
-              variant="ghost"
-              size="icon"
-              onClick={triggerFileUpload}
-              disabled={isUploading}
-            >
-              <Upload className="w-5 h-5" />
-            </Button>
-          </div>
           <form
             onSubmit={handleSubmit}
             className="w-full items-center flex relative gap-2"

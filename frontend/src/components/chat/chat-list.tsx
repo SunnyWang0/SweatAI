@@ -88,16 +88,16 @@ export default function ChatList({
       <div className="w-full h-full flex justify-center items-center">
         <div className="relative flex flex-col gap-4 items-center justify-center w-full h-full">
           <div></div>
-          <div className="flex flex-col gap-4 items-center">
+          <div className="flex flex-col gap-4 items-center mt-[-200px]">
             <Image
-              src="/ollama.png"
+              src="/sweat.png"
               alt="AI"
-              width={60}
-              height={60}
-              className="h-20 w-14 object-contain"
+              width={90}
+              height={90}
+              className="h-28 w-20 object-contain"
             />
-            <p className="text-center text-lg text-muted-foreground">
-              How can I help you today?
+            <p className="text-center text-lg font-light text-muted-foreground">
+              Hacking fitness one question at a time
             </p>
           </div>
 
@@ -123,7 +123,7 @@ export default function ChatList({
                       key={message.content}
                       type="button"
                       variant="outline"
-                      className="sm:text-start px-4 py-8 flex w-full justify-center sm:justify-start items-center text-sm whitespace-pre-wrap"
+                      className="sm:text-start px-4 py-8 flex w-full justify-center sm:justify-start items-center text-sm whitespace-pre-wrap font-normal"
                       onClick={(e) => onClickQuestion(message.content, e)}
                     >
                       {message.content}
@@ -189,7 +189,7 @@ export default function ChatList({
                 <div className="flex items-end gap-2">
                   <Avatar className="flex justify-start items-center">
                     <AvatarImage
-                      src="/ollama.png"
+                      src="/sweat.png"
                       alt="AI"
                       width={6}
                       height={6}
@@ -232,7 +232,7 @@ export default function ChatList({
           <div className="flex pl-4 pb-4 gap-2 items-center">
             <Avatar className="flex justify-start items-center">
               <AvatarImage
-                src="/ollama.png"
+                src="/sweat.png"
                 alt="AI"
                 width={6}
                 height={6}

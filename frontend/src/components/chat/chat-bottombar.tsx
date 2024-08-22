@@ -100,7 +100,7 @@ export default function ChatBottombar({
               onChange={handleInputChange}
               name="message"
               placeholder={
-                !isListening ? "Enter your prompt here" : "Listening"
+                !isListening ? "Ask Me Anything" : "Listening"
               }
               className="max-h-24 px-14 bg-accent py-[22px] text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full  rounded-full flex items-center h-16 resize-none overflow-hidden dark:bg-card"
             />

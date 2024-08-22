@@ -33,7 +33,9 @@ export default function ChatTopbar({ chatId, messages }: ChatTopbarProps) {
           </SheetContent>
         </Sheet>
       </div>
-      <h1 className="text-2xl font-bold flex-grow text-center">Sweat</h1>
+      <div className="flex-grow flex justify-center">
+        <h1 className="text-5xl font-light ml-3 font-serif">Sweat</h1>
+      </div>
       <div className="w-5 h-5"></div> {/* Placeholder for right side */}
     </div>
   );

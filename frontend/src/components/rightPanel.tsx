@@ -16,7 +16,7 @@ export function RightPanel({ isCollapsed, isMobile }: RightPanelProps) {
       className="relative justify-between group lg:bg-accent/20 lg:dark:bg-card/35 flex flex-col h-full gap-4 p-2 data-[collapsed=true]:p-2"
     >
       <div className="flex flex-col justify-between p-2 pt-8 max-h-fit overflow-y-auto">
-        <h2 className="text-base font-semibold mb-4 text-center">Search Results</h2>
+        <h2 className="text-base font-normal mb-4 text-center">Search Results</h2>
         
         <div className="flex flex-col gap-2">
           <ScrollArea className="h-[calc(100vh-200px)]">

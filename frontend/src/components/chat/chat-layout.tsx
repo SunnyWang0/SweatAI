@@ -13,6 +13,7 @@ import Chat, { ChatProps } from "./chat";
 import ChatList from "./chat-list";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { RightPanel } from "../rightPanel";
+import ChatTopbar from "./chat-topbar";
 
 export interface ShoppingResult {
   title: string;
@@ -51,7 +52,6 @@ export function ChatLayout({
   shoppingResults,
   resetChat,
 }: MergedProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -82,62 +82,32 @@ export function ChatLayout({
       className="h-screen items-stretch"
     >
       <ResizablePanel
-        defaultSize={defaultLayout[0]}
-        collapsedSize={navCollapsedSize}
-        collapsible={true}
-        minSize={isMobile ? 0 : 12}
-        maxSize={isMobile ? 0 : 16}
-        onCollapse={() => {
-          setIsCollapsed(true);
-          document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-            true
-          )}`;
-        }}
-        onExpand={() => {
-          setIsCollapsed(false);
-          document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-            false
-          )}`;
-        }}
-        className={cn(
-          isCollapsed
-            ? "min-w-[50px] md:min-w-[70px] transition-all duration-300 ease-in-out"
-            : "hidden md:block"
-        )}
+        className="h-full w-full flex flex-col"
+        defaultSize={70}
       >
-        <Sidebar
-          isCollapsed={isCollapsed || isMobile}
-          messages={messages}
-          isMobile={isMobile}
-          setMessages={setMessages}
-          chatId=""
-        />
+        <ChatTopbar chatId="" messages={messages} />
+        <div className="flex-grow flex justify-center">
+          <Chat
+            messages={messages}
+            input={input}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            isLoading={isLoading}
+            loadingSubmit={loadingSubmit}
+            error={error}
+            stop={stop}
+            formRef={formRef}
+            isMobile={isMobile}
+            setInput={setInput}
+            shoppingResults={shoppingResults}
+            resetChat={resetChat}
+            setMessages={setMessages}
+          />
+        </div>
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />
       <ResizablePanel
-        className="h-full w-full flex justify-center"
-        defaultSize={defaultLayout[1]}
-      >
-        <Chat
-          messages={messages}
-          input={input}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          loadingSubmit={loadingSubmit}
-          error={error}
-          stop={stop}
-          formRef={formRef}
-          isMobile={isMobile}
-          setInput={setInput}
-          shoppingResults={shoppingResults}
-          resetChat={resetChat}
-          setMessages={setMessages}
-        />
-      </ResizablePanel>
-      <ResizableHandle className={cn("hidden md:flex")} withHandle />
-      <ResizablePanel
-        defaultSize={defaultLayout[2] || 30} // Adjust this value as needed
+        defaultSize={30}
         minSize={isMobile ? 0 : 12}
         maxSize={isMobile ? 0 : 30}
         className={cn("hidden md:block")}

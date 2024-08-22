@@ -10,8 +10,6 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.26.1",
-    "@clerk/nextjs": "^5.3.1",
-    "@clerk/themes": "^2.1.19",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@google/generative-ai": "^0.16.0",
@@ -37,7 +35,7 @@
     "framer-motion": "^11.0.3",
     "langchain": "^0.1.13",
     "lucide-react": "^0.322.0",
-    "next": "^14.2.3",
+    "next": "^14.2.6",
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-code-blocks": "^0.1.6",
@@ -55,6 +53,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-react": "^7.24.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -65,5 +65,8 @@
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint"
   }
 }

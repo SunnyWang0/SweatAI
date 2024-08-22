@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { ChatProps } from "./chat";
 import { Button } from "../ui/button";
 import TextareaAutosize from "react-textarea-autosize";
 import { AnimatePresence } from "framer-motion";
 import { PaperPlaneIcon, StopIcon } from "@radix-ui/react-icons";
-import { Mic, SendHorizonal } from "lucide-react";
+import { Mic, SendHorizonal, RotateCcw } from "lucide-react";
 import useSpeechToText from "@/app/hooks/useSpeechRecognition";
 
-export default function ChatBottombar({
+export default function ChatBottombar({ 
   messages,
   input,
   handleInputChange,
@@ -19,6 +19,7 @@ export default function ChatBottombar({
   stop,
   formRef,
   setInput,
+  resetChat,
 }: ChatProps) {
   const [message, setMessage] = React.useState(input);
   const [isMobile, setIsMobile] = React.useState(false);
@@ -51,10 +52,10 @@ export default function ChatBottombar({
     isListening ? stopVoiceInput() : startListening();
   };
 
-  const stopVoiceInput = () => {
+  const stopVoiceInput = useCallback(() => {
     setInput && setInput(transcript.length ? transcript : "");
     stopListening();
-  };
+  }, [setInput, transcript, stopListening]);
 
   const handleListenClick = () => {
     listen();
@@ -70,12 +71,21 @@ export default function ChatBottombar({
     if (isLoading) {
       stopVoiceInput();
     }
-  }, [isLoading]);
+  }, [isLoading, stopVoiceInput]);
 
   return (
     <div className="p-4 pb-7 flex justify-between w-full items-center gap-2">
       <AnimatePresence initial={false}>
         <div className="w-full items-center flex relative gap-2">
+          <Button
+            onClick={resetChat}
+            className="shrink-0 rounded-full"
+            variant="ghost"
+            size="icon"
+            type="button"
+          >
+            <RotateCcw className="w-5 h-5" />
+          </Button>
           <form
             onSubmit={handleSubmit}
             className="w-full items-center flex relative gap-2"

@@ -1,5 +1,4 @@
 import React from "react";
-import ChatTopbar from "./chat-topbar";
 import ChatList from "./chat-list";
 import ChatBottombar from "./chat-bottombar";
 import { Message } from "ai/react";
@@ -14,7 +13,6 @@ interface ShoppingResult {
 }
 
 export interface ChatProps {
-  chatId?: string;
   messages: Message[];
   input: string;
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -30,6 +28,8 @@ export interface ChatProps {
   isMobile?: boolean;
   setInput?: React.Dispatch<React.SetStateAction<string>>;
   shoppingResults?: ShoppingResult[];
+  resetChat: () => void;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 export default function Chat({
@@ -40,21 +40,16 @@ export default function Chat({
   isLoading,
   error,
   stop,
-  chatId,
   loadingSubmit,
   formRef,
   isMobile,
   setInput,
   shoppingResults,
+  resetChat,
+  setMessages,
 }: ChatProps) {
-  console.log("Chat component shoppingResults:", shoppingResults);
   return (
     <div className="flex flex-col justify-between w-10/12 h-full ">
-      <ChatTopbar
-        chatId={chatId}
-        messages={messages}
-      />
-
       <ChatList
         messages={messages}
         input={input}
@@ -67,6 +62,8 @@ export default function Chat({
         formRef={formRef}
         isMobile={isMobile}
         shoppingResults={shoppingResults}
+        resetChat={resetChat}
+        setMessages={setMessages}
       />
 
       <ChatBottombar
@@ -79,6 +76,8 @@ export default function Chat({
         stop={stop}
         formRef={formRef}
         setInput={setInput}
+        resetChat={resetChat}
+        setMessages={setMessages}
       />
     </div>
   );

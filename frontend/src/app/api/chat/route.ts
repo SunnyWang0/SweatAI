@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
         if (query) {
           const shoppingResults = await getRequestGoogleShopping(query);
           if (shoppingResults) {
-            for (const item of shoppingResults.slice(0, 4)) {
+            for (const item of shoppingResults.slice(0, 2)) { //Number of results to display
               const scrapedContent = await scrapeJina(item.link);
               const formulaStream = await client.messages.stream({
                 model: "claude-3-haiku-20240307",

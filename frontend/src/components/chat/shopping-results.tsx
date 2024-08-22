@@ -3,6 +3,7 @@ import { ShoppingCart, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeDisplayBlock from "../code-display-block";
+import Image from 'next/image';
 
 export interface ShoppingResult {
   title: string;
@@ -43,7 +44,13 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
         <div key={index} className="mb-6 p-4 bg-white rounded-lg shadow-md dark:bg-gray-700">
           <div className="flex justify-between items-start">
             <div className="flex items-start">
-              <img src={item.thumbnail} alt={item.title} className="w-24 h-24 object-cover mr-4 rounded-md" />
+              <Image
+                src={item.thumbnail}
+                alt={item.title}
+                width={96}
+                height={96}
+                className="object-cover mr-4 rounded-md"
+              />
               <div>
                 <h4 className="text-lg font-medium mb-2 dark:text-white">{item.title}</h4>  
                 <p className="text-xl font-bold text-green-600 mb-2 dark:text-green-400">{item.price}</p>

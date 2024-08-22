@@ -25,9 +25,6 @@ export default function ChatList({
   isMobile,
   shoppingResults,
 }: ChatProps) {
-  console.log("ChatList received shoppingResults:", shoppingResults);
-  console.log("ChatList shoppingResults type:", typeof shoppingResults);
-  console.log("ChatList shoppingResults length:", shoppingResults?.length);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [name, setName] = React.useState<string>("");
   const [localStorageIsLoading, setLocalStorageIsLoading] =

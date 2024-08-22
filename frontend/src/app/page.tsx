@@ -45,6 +45,13 @@ export default function Home() {
   const formRef = useRef<HTMLFormElement>(null);
   const [shoppingResults, setShoppingResults] = useState<ShoppingResult[]>([]);
 
+  const resetChat = () => {
+    setMessages([]);
+    setShoppingResults([]);
+    setChatId(uuidv4());
+    localStorage.removeItem(`chat_${chatId}`);
+  };
+
   useEffect(() => {
     if (messages.length < 1) {
       console.log("Generating chat id");
@@ -187,6 +194,7 @@ export default function Home() {
           setMessages={setMessages}
           setInput={setInput} 
           shoppingResults={shoppingResults}
+          resetChat={resetChat}
         />
         <DialogContent className="flex flex-col space-y-4">
           <DialogHeader className="space-y-2">

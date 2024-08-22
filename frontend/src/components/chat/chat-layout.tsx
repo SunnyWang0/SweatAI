@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -26,9 +26,9 @@ interface ChatLayoutProps {
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
-  chatId: string;
-  setMessages: (messages: Message[]) => void;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   shoppingResults?: ShoppingResult[];
+  resetChat: () => void;
 }
 
 type MergedProps = ChatLayoutProps & ChatProps;
@@ -44,12 +44,12 @@ export function ChatLayout({
   isLoading,
   error,
   stop,
-  chatId,
   loadingSubmit,
   formRef,
   setMessages,
   setInput,
   shoppingResults,
+  resetChat,
 }: MergedProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
@@ -109,8 +109,8 @@ export function ChatLayout({
           isCollapsed={isCollapsed || isMobile}
           messages={messages}
           isMobile={isMobile}
-          chatId={chatId}
           setMessages={setMessages}
+          chatId=""
         />
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />
@@ -119,7 +119,6 @@ export function ChatLayout({
         defaultSize={defaultLayout[1]}
       >
         <Chat
-          chatId={chatId}
           messages={messages}
           input={input}
           handleInputChange={handleInputChange}
@@ -132,6 +131,8 @@ export function ChatLayout({
           isMobile={isMobile}
           setInput={setInput}
           shoppingResults={shoppingResults}
+          resetChat={resetChat}
+          setMessages={setMessages}
         />
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />

@@ -14,7 +14,7 @@ interface ChatTopbarProps {
 
 export default function ChatTopbar({ chatId, messages }: ChatTopbarProps) {
   return (
-    <div className="w-full flex items-center justify-between py-4 px-4">
+    <div className="w-full flex items-center justify-between py-10 px-4">
       <div className="lg:hidden">
         <Sheet>
           <SheetTrigger>
@@ -33,7 +33,7 @@ export default function ChatTopbar({ chatId, messages }: ChatTopbarProps) {
           </SheetContent>
         </Sheet>
       </div>
-      <h1 className="text-2xl font-bold">Sweat</h1>
+      <h1 className="text-2xl font-bold flex-grow text-center">Sweat</h1>
       <div className="w-5 h-5"></div> {/* Placeholder for right side */}
     </div>
   );

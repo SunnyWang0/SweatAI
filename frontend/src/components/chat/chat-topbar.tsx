@@ -1,14 +1,10 @@
 "use client";
 
 import React from "react";
-import { Message } from "ai/react";
 
-interface ChatTopbarProps {
-  chatId?: string;
-  messages: Message[];
-}
+interface ChatTopbarProps {}
 
-export default function ChatTopbar({ chatId, messages }: ChatTopbarProps) {
+export default function ChatTopbar({}: ChatTopbarProps) {
   return (
     <div className="w-full flex items-center justify-between py-10 px-4">
       <div className="flex-grow flex justify-center">

@@ -197,23 +197,15 @@ export default function ChatList({
                     />
                   </Avatar>
                   <span className="bg-accent p-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
-                    {/* Check if the message content contains a code block */}
-                    {message.content.split("```").map((part, index) => {
-                      if (index % 2 === 0) {
-                        return (
-                          <Markdown key={index} remarkPlugins={[remarkGfm]}>
-                            {part}
-                          </Markdown>
-                        );
-                      } else {
-                        return (
-                          <pre className="whitespace-pre-wrap" key={index}>
-                            <CodeDisplayBlock code={part} lang="" />
-                          </pre>
-                        );
-                      }
-                    })}
-                    {isLoading &&
+                    {message.content.split("\n").map((line, index) => (
+                      <React.Fragment key={index}>
+                        {line}
+                        {index < message.content.split("\n").length - 1 && (
+                          <br className="leading-[1.2]" />
+                        )}
+                      </React.Fragment>
+                    ))}
+                     {isLoading &&
                       messages.indexOf(message) === messages.length - 1 && (
                         <span className="animate-pulse" aria-label="Typing">
                           ...
@@ -248,6 +240,7 @@ export default function ChatList({
             </div>
           </div>
         )}
+        <div ref={bottomRef} />
       </div>
       <div id="anchor" ref={bottomRef}></div>
     </div>

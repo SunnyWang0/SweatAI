@@ -54,6 +54,6 @@ export const INITIAL_QUESTIONS = [
     content: "What part of the leg does squats target?",
   },
   {
-    content: "Find me a high quality lifting belf I can use for squats",
+    content: "How much more can I squat with a belt?",
   },
 ];

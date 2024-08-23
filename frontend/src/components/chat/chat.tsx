@@ -1,5 +1,6 @@
 import React from "react";
 import ChatList from "./chat-list";
+import ChatTopbar from "./chat-topbar";
 import ChatBottombar from "./chat-bottombar";
 import { Message } from "ai/react";
 import { ChatRequestOptions } from "ai";
@@ -50,6 +51,7 @@ export default function Chat({
 }: ChatProps) {
   return (
     <div className="flex flex-col justify-between w-10/12 h-full ">
+      <ChatTopbar />
       <ChatList
         messages={messages}
         input={input}

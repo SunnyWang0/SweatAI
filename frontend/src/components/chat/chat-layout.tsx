@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
+import React, { useEffect, useState} from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -13,7 +13,6 @@ import Chat, { ChatProps } from "./chat";
 import ChatList from "./chat-list";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { RightPanel } from "../rightPanel";
-import ChatTopbar from "./chat-topbar";
 
 export interface ShoppingResult {
   title: string;
@@ -27,7 +26,7 @@ interface ChatLayoutProps {
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  setMessages: (messages: Message[]) => void;
   shoppingResults?: ShoppingResult[];
   resetChat: () => void;
 }
@@ -52,6 +51,7 @@ export function ChatLayout({
   shoppingResults,
   resetChat,
 }: MergedProps) {
+  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -85,7 +85,6 @@ export function ChatLayout({
         className="h-full w-full flex flex-col"
         defaultSize={70}
       >
-        <ChatTopbar chatId="" messages={messages} />
         <div className="flex-grow flex justify-center">
           <Chat
             messages={messages}
@@ -107,7 +106,7 @@ export function ChatLayout({
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />
       <ResizablePanel
-        defaultSize={30}
+        defaultSize={10}
         minSize={isMobile ? 0 : 12}
         maxSize={isMobile ? 0 : 30}
         className={cn("hidden md:block")}

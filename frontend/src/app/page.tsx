@@ -182,7 +182,7 @@ export default function Home() {
         navCollapsedSize={10}
         defaultLayout={[30, 160]}
         formRef={formRef}
-        setMessages={(value) => setMessages(value)}
+        setMessages={setMessages as React.Dispatch<React.SetStateAction<Message[]>>}
         setInput={setInput} 
         shoppingResults={shoppingResults}
         resetChat={resetChat}

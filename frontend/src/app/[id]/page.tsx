@@ -170,7 +170,6 @@ export default function Home() {
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
       <ChatLayout
-        chatId=""
         messages={messages}
         input={input}
         handleInputChange={handleInputChange}
@@ -182,7 +181,7 @@ export default function Home() {
         navCollapsedSize={10}
         defaultLayout={[30, 160]}
         formRef={formRef}
-        setMessages={setMessages}
+        setMessages={setMessages as React.Dispatch<React.SetStateAction<Message[]>>}
         setInput={setInput}
         shoppingResults={shoppingResults}
         resetChat={resetChat}

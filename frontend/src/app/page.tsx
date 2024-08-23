@@ -178,8 +178,7 @@ export default function Home() {
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <ChatLayout
-          chatId=""
+        <ChatLayout     
           messages={messages}
           input={input}
           handleInputChange={handleInputChange}
@@ -191,7 +190,7 @@ export default function Home() {
           navCollapsedSize={10}
           defaultLayout={[30, 160]}
           formRef={formRef}
-          setMessages={setMessages}
+          setMessages={(value) => setMessages(value)}
           setInput={setInput} 
           shoppingResults={shoppingResults}
           resetChat={resetChat}

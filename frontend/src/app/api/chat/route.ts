@@ -1,46 +1,70 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Anthropic } from "@anthropic-ai/sdk";
+import OpenAI from 'openai';
 import { ShoppingResult } from "../../../components/chat/chat-layout";
 import { Message } from "ai";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const client = new Anthropic({
+const ClaudeClient = new Anthropic({
   apiKey: ANTHROPIC_API_KEY!,
 });
 
+const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
+const PerplexityClient = new OpenAI({
+  apiKey: PERPLEXITY_API_KEY!,
+  baseURL: "https://api.perplexity.ai",
+});
+
 const shopper_system_message = `
-You are SweatAI, a fitness coach and supplement shopping assistant. Your primary purpose is to help users find suitable supplements and fitness products while answering their questions. Follow these guidelines:
+You are SweatAI, a fitness research assistant and fitness-related product shopping advisor. Your primary purpose is to help users optimize their fitness routines by answering their questions only with answers backed by scientific studies and papers. Where fit, you also make informed recommendations about supplements and fitness products based on scientific research, aligning with the user's preferences and goals. Follow these guidelines:
 
-1. Analyze user's needs, preferences, and questions about supplements, ingredients, or fitness products.
+1. Analyze user's questions about fitness, workouts, nutrition, supplements, or related topics. Analyze their needs, preferences, and goals where fit.
+
 2. Respond to users:
-a. Be direct and concise.
-b. Ask follow-ups if needed.
-c. Explain ingredients and benefits when prompted.
-d. Tailor recommendations to user's workout style and goals.
-e. Use bullet points for lists: • Item 1 • Item 2 • Item 3
-f. Minimize line breaks.
+a. Provide direct and concise research-backed answers
+b. Include links to relevant scientific papers supporting your recommendations.
+c. Ask follow-up questions if needed for clarity.
+d. Explain concepts, techniques, or ingredients when prompted. Include benefits, side effects, and potential interactions.
+e. Tailor advice to user's specific goals, fitness level, and preferences.
+f. Use bullet points for lists: • Item 1 • Item 2 • Item 3
+g. Minimize line breaks.
 
-3. After your response, silently generate a search query:
-a. Format: <<QUERY>>term1, term2, term3
-b. Query terms should be precise, reflect preferences, and use positive terms.
-c. Include specific recommended ingredients, product types, or qualities.
-d. Do not mention or explain the query to the user.
+3. Focus on providing evidence-based recommendations for:
+a. Workout optimization
+b. Fitness routines
+c. Nutrition strategies
+d. Recovery techniques
+e. Supplement efficacy and safety
+f. Fitness product recommendations
+g. Supplement recommendations
 
-4. For unrelated inputs:
-a. Redirect the conversation to fitness, supplements, or healthy living topics.
-b. Encourage fitness/supplement-related questions.
+4. When users specifically ask about products or supplements:
+a. Discuss scientifically-supported ingredients or features to look for.
+b. Explain potential benefits based on research findings.
+c. Mention any relevant precautions or considerations.
+d. After your response, silently generate a search query:
+• Format: <<QUERY>>term1, term2, term3
+• Include specific recommended ingredients, product types, or qualities based on the scientific recommendations you've provided.
+• Use precise terms reflecting user preferences and research-backed advice.
+• Do not mention or explain the query to the user.
 
-5. Focus on recommending ingredients, product types, or qualities to look for, not specific brands.
+5. For unrelated inputs:
+a. Redirect the conversation to fitness, health, or nutrition topics.
+b. Encourage questions related to evidence-based fitness optimization.
 
-6. Ensure all your response is before the <<QUERY>> tag, and only query terms follow it.
+6. Always prioritize scientific evidence over anecdotal claims or popular trends.
 
-Remember, your role is to provide helpful information and recommendations to users about fitness and supplements, while seamlessly facilitating product searches behind the scenes.
+7. Refrain from recommending specific brands; focus on ingredients, types, or qualities supported by research.
+
+8. When a query is generated, ensure all your response is before the <<QUERY>> tag, and only query terms follow it.
+
+Remember, your role is to provide scientifically-sound information and recommendations to users about fitness, nutrition, and supplements, while seamlessly facilitating product searches, based on evidence-backed criteria, behind the scenes.
 `;
 
 const scraper_system_message = `
 You are an AI assistant extracting information from scraped fitness product content. Analyze text and images, then extract relevant details based on product type. Your output will be used directly in a shopping results component.
 
-1. Identify the product type (supplement, equipment, apparel, etc.).
+1. Identify the product type (supplement, equipment, apparel, etc.), but dont mention it to the user.
 
 2. For supplements and food items:
    a. Extract ingredients and amounts from the formula section.
@@ -104,51 +128,51 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const claudeMessages = messages.map((msg: Message) => ({
+        const perplexityMessages = messages.map((msg: Message) => ({
           role: msg.role,
           content: msg.content,
         }));
-        const stream = await client.messages.stream({
-          model: "claude-3-haiku-20240307",
-          max_tokens: 2048,
-          temperature: 0.6,
-          system: shopper_system_message,
-          messages: claudeMessages,
+        const stream = await PerplexityClient.chat.completions.create({
+          model: "llama-3.1-sonar-small-128k-online",
+          messages: [
+            { role: "system", content: shopper_system_message },
+            ...perplexityMessages
+          ],
+          stream: true,
         });
 
         let fullResponse = "";
         let stopStreaming = false;
 
         for await (const chunk of stream) {
-          if (chunk.type === "content_block_delta") {
-            if ("text" in chunk.delta) {
-              fullResponse += chunk.delta.text;
+          if (chunk.choices[0].delta.content) {
+            const content = chunk.choices[0].delta.content;
+            fullResponse += content;
 
-              if (!stopStreaming) {
-                if (chunk.delta.text.includes("<")) {
-                  stopStreaming = true;
-                  // Send the last part of the response before "<"
-                  const lastValidPart = fullResponse.split("<")[0];
-                  controller.enqueue(
-                    encoder.encode(
-                      JSON.stringify({
-                        type: "assistant_response",
-                        content: lastValidPart.slice(
-                          lastValidPart.lastIndexOf("\n") + 1
-                        ),
-                      }) + "\n"
-                    )
-                  );
-                } else {
-                  controller.enqueue(
-                    encoder.encode(
-                      JSON.stringify({
-                        type: "assistant_response",
-                        content: chunk.delta.text,
-                      }) + "\n"
-                    )
-                  );
-                }
+            if (!stopStreaming) {
+              if (content.includes("<")) {
+                stopStreaming = true;
+                // Send the last part of the response before "<"
+                const lastValidPart = fullResponse.split("<")[0];
+                controller.enqueue(
+                  encoder.encode(
+                    JSON.stringify({
+                      type: "assistant_response",
+                      content: lastValidPart.slice(
+                        lastValidPart.lastIndexOf("\n") + 1
+                      ),
+                    }) + "\n"
+                  )
+                );
+              } else {
+                controller.enqueue(
+                  encoder.encode(
+                    JSON.stringify({
+                      type: "assistant_response",
+                      content: content,
+                    }) + "\n"
+                  )
+                );
               }
             }
           }
@@ -164,10 +188,10 @@ export async function POST(req: NextRequest) {
           if (shoppingResults) {
             for (const item of shoppingResults.slice(0, 2)) { //Number of results to display
               const scrapedContent = await scrapeJina(item.link);
-              const formulaStream = await client.messages.stream({
+              const formulaStream = await ClaudeClient.messages.stream({
                 model: "claude-3-haiku-20240307",
-                max_tokens: 1024,
-                temperature: 0.1,
+                max_tokens: 2048,
+                temperature: 0.2,
                 system: scraper_system_message,
                 messages: [
                   {

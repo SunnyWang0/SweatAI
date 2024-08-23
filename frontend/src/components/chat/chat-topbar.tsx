@@ -1,10 +1,6 @@
 "use client";
 
 import React from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import { Sidebar } from "../sidebar";
 import { Message } from "ai/react";
 
 interface ChatTopbarProps {
@@ -15,28 +11,9 @@ interface ChatTopbarProps {
 export default function ChatTopbar({ chatId, messages }: ChatTopbarProps) {
   return (
     <div className="w-full flex items-center justify-between py-10 px-4">
-      <div className="lg:hidden">
-        <Sheet>
-          <SheetTrigger>
-            <HamburgerMenuIcon className="w-5 h-5" />
-          </SheetTrigger>
-          <SheetContent side="left">
-            <Sidebar
-              chatId={chatId || ""}
-              isCollapsed={false}
-              isMobile={true}
-              messages={messages}
-              setMessages={function (messages: Message[]): void {
-                throw new Error("Function not implemented.");
-              }}
-            />
-          </SheetContent>
-        </Sheet>
-      </div>
       <div className="flex-grow flex justify-center">
-        <h1 className="text-5xl font-light ml-3 font-serif">Sweat</h1>
+        <h1 className="text-5xl font-light font-serif">Sweat</h1>
       </div>
-      <div className="w-5 h-5"></div> {/* Placeholder for right side */}
     </div>
   );
 }

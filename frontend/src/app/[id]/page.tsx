@@ -1,13 +1,6 @@
 "use client";
 
 import { ChatLayout } from "@/components/chat/chat-layout";
-import {
-  Dialog,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-} from "@/components/ui/dialog";
 import UsernameForm from "@/components/username-form";
 import { ChatRequestOptions } from "ai";
 import { Message, useChat } from "ai/react";
@@ -176,36 +169,24 @@ export default function Home() {
 
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <ChatLayout
-          chatId=""
-          messages={messages}
-          input={input}
-          handleInputChange={handleInputChange}
-          handleSubmit={onSubmit}
-          isLoading={isLoading}
-          loadingSubmit={loadingSubmit}
-          error={error}
-          stop={stop}
-          navCollapsedSize={10}
-          defaultLayout={[30, 160]}
-          formRef={formRef}
-          setMessages={setMessages}
-          setInput={setInput}
-          shoppingResults={shoppingResults}
-          resetChat={resetChat}
-        />
-        <DialogContent className="flex flex-col space-y-4">
-          <DialogHeader className="space-y-2">
-            <DialogTitle>Welcome to Ollama!</DialogTitle>
-            <DialogDescription>
-              Enter your name to get started. This is just to personalize your
-              experience.
-            </DialogDescription>
-            <UsernameForm setOpen={setOpen} />
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <ChatLayout
+        chatId=""
+        messages={messages}
+        input={input}
+        handleInputChange={handleInputChange}
+        handleSubmit={onSubmit}
+        isLoading={isLoading}
+        loadingSubmit={loadingSubmit}
+        error={error}
+        stop={stop}
+        navCollapsedSize={10}
+        defaultLayout={[30, 160]}
+        formRef={formRef}
+        setMessages={setMessages}
+        setInput={setInput}
+        shoppingResults={shoppingResults}
+        resetChat={resetChat}
+      />
     </main>
   );
 }

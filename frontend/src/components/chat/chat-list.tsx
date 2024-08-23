@@ -173,7 +173,7 @@ export default function ChatList({
                   </span>
                   <Avatar className="flex justify-start items-center overflow-hidden">
                     <AvatarImage
-                      src="/"
+                      src="/user.png"
                       alt="user"
                       width={6}
                       height={6}

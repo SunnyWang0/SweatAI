@@ -109,7 +109,11 @@ export function ChatLayout({
         maxSize={isMobile ? 0 : 30}
         className={cn("hidden md:block")}
       >
-        <RightPanel isCollapsed={false} isMobile={isMobile} />
+        <RightPanel
+          isCollapsed={false}
+          isMobile={isMobile}
+          shoppingResults={shoppingResults || []}
+        />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

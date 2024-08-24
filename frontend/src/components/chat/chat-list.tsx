@@ -10,7 +10,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { INITIAL_QUESTIONS } from "@/utils/initial-questions";
 import { Button } from "../ui/button";
-import ShoppingResults from './shopping-results';
+import ShoppingResults from "./shopping-results";
 
 export default function ChatList({
   messages,
@@ -205,7 +205,7 @@ export default function ChatList({
                         )}
                       </React.Fragment>
                     ))}
-                     {isLoading &&
+                    {isLoading &&
                       messages.indexOf(message) === messages.length - 1 && (
                         <span className="animate-pulse" aria-label="Typing">
                           ...
@@ -217,9 +217,6 @@ export default function ChatList({
             </div>
           </motion.div>
         ))}
-        {shoppingResults && shoppingResults.length > 0 && (
-          <ShoppingResults results={shoppingResults} />
-        )}
         {loadingSubmit && (
           <div className="flex pl-4 pb-4 gap-2 items-center">
             <Avatar className="flex justify-start items-center">

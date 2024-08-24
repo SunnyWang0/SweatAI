@@ -7,7 +7,7 @@ import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { ShoppingResult } from '../components/chat/shopping-results';
+import { ShoppingResult } from "../components/chat/shopping-results";
 
 export default function Home() {
   const {
@@ -102,7 +102,11 @@ export default function Home() {
         throw new Error("No reader available");
       }
 
-      let assistantMessage: Message = { role: "assistant", content: "", id: chatId };
+      let assistantMessage: Message = {
+        role: "assistant",
+        content: "",
+        id: chatId,
+      };
       let newShoppingResults: ShoppingResult[] = [];
 
       while (true) {
@@ -111,14 +115,14 @@ export default function Home() {
           break;
         }
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.trim() !== '');
-        
+        const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+
         for (const line of lines) {
           const data = JSON.parse(line);
-          if (data.type === 'assistant_response') {
+          if (data.type === "assistant_response") {
             assistantMessage.content += data.content;
             setMessages([...messages, userMessage, { ...assistantMessage }]);
-          } else if (data.type === 'shopping_result') {
+          } else if (data.type === "shopping_result") {
             newShoppingResults.push(data.content);
           }
         }
@@ -127,7 +131,6 @@ export default function Home() {
       if (newShoppingResults.length > 0) {
         setShoppingResults(newShoppingResults);
       }
-
     } catch (error) {
       toast.error("An error occurred. Please try again.");
     } finally {
@@ -136,18 +139,20 @@ export default function Home() {
   };
 
   const onOpenChange = (isOpen: boolean) => {
-    const username = localStorage.getItem("ollama_user")
-    if (username) return setOpen(isOpen)
+    const username = localStorage.getItem("ollama_user");
+    if (username) return setOpen(isOpen);
 
-    localStorage.setItem("ollama_user", "Anonymous")
-    window.dispatchEvent(new Event("storage"))
-    setOpen(isOpen)
-  }
+    localStorage.setItem("ollama_user", "Anonymous");
+    window.dispatchEvent(new Event("storage"));
+    setOpen(isOpen);
+  };
 
   const parseShoppingResults = (data: string): ShoppingResult[] => {
     const results: ShoppingResult[] = [];
-    const productRegex = /Product Information:([\s\S]*?)(?=Product Information:|$)/gi;
-    const fieldRegex = /(Title|Price|Link|Thumbnail|Formula):\s*([\s\S]*?)(?=(?:Title|Price|Link|Thumbnail|Formula):|$)/gi;
+    const productRegex =
+      /Product Information:([\s\S]*?)(?=Product Information:|$)/gi;
+    const fieldRegex =
+      /(Title|Price|Link|Thumbnail|Formula):\s*([\s\S]*?)(?=(?:Title|Price|Link|Thumbnail|Formula):|$)/gi;
 
     let productMatch;
     while ((productMatch = productRegex.exec(data)) !== null) {
@@ -168,9 +173,14 @@ export default function Home() {
     return results;
   };
 
+  // Add useEffect to watch for changes in shoppingResults
+  useEffect(() => {
+    // This effect will run whenever shoppingResults changes
+  }, [shoppingResults]);
+
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center ">
-      <ChatLayout     
+      <ChatLayout
         messages={messages}
         input={input}
         handleInputChange={handleInputChange}
@@ -182,8 +192,10 @@ export default function Home() {
         navCollapsedSize={10}
         defaultLayout={[30, 160]}
         formRef={formRef}
-        setMessages={setMessages as React.Dispatch<React.SetStateAction<Message[]>>}
-        setInput={setInput} 
+        setMessages={
+          setMessages as React.Dispatch<React.SetStateAction<Message[]>>
+        }
+        setInput={setInput}
         shoppingResults={shoppingResults}
         resetChat={resetChat}
       />

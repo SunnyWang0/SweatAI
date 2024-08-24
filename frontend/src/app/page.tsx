@@ -191,6 +191,7 @@ export default function Home() {
         stop={stop}
         navCollapsedSize={10}
         defaultLayout={[30, 160]}
+        isCollapsed={shoppingResults.length === 0}
         formRef={formRef}
         setMessages={
           setMessages as React.Dispatch<React.SetStateAction<Message[]>>

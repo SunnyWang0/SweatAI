@@ -40,13 +40,9 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
     return null;
   }
 
-  const parseFormula = (formula: string) => {
-    return formula.trim();
-  };
-
   return (
     <div className="mt-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-      <h3 className="text-lg font-semibold mb-4 dark:text-white">
+      <h3 className="text-xl font-light font-serif mb-4 dark:text-white">
         Shopping Results
       </h3>
       {results.map((item, index) => (
@@ -55,24 +51,35 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
           className="mb-6 p-4 bg-white rounded-lg shadow-md dark:bg-gray-700"
         >
           <div className="flex justify-between items-start">
-            <div className="text-sm flex items-start">
-              <Image
-                src={item.thumbnail}
-                alt={item.title}
-                width={96}
-                height={96}
-                className="object-cover mr-4 rounded-md"
-              />
+            <div className="flex items-start">
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mr-4"
+              >
+                <div className="w-24 h-24">
+                  <Image
+                    src={item.thumbnail}
+                    alt={item.title}
+                    width={96}
+                    height={96}
+                    className="object-cover w-full h-full rounded-md"
+                  />
+                </div>
+              </a>
               <div>
-                <h4 className="text-md font-medium mb-2 dark:text-white">
-                  {item.title}
-                </h4>
-                <p className="text-lg font-bold text-green-600 mb-2 dark:text-green-400">
+                <a href={item.link} target="_blank" rel="noopener noreferrer">
+                  <h4 className="text-sm font-medium mb-2 dark:text-white">
+                    {item.title}
+                  </h4>
+                </a>
+                <p className="text-xl font-bold text-green-600 mb-2 dark:text-green-400">
                   {item.price}
                 </p>
               </div>
             </div>
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 mr-2">
               <button
                 onClick={() => addToCart(item.title)}
                 className="p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center dark:bg-blue-600 dark:hover:bg-blue-700"

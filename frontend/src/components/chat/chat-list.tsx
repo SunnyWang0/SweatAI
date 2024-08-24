@@ -11,6 +11,26 @@ import remarkGfm from "remark-gfm";
 import { INITIAL_QUESTIONS } from "@/utils/initial-questions";
 import { Button } from "../ui/button";
 import ShoppingResults from "./shopping-results";
+import ReactMarkdown from "react-markdown";
+
+const processMessageContent = (content: string) => {
+  // Remove the "### Query" section and everything after it
+  const parts = content.split("### Query");
+  return parts[0].trim().replace(/\n{2,}/g, "\n");
+};
+
+const CustomHeader = ({
+  level,
+  children,
+}: {
+  level: number;
+  children: React.ReactNode;
+}) => {
+  if (level === 3) {
+    return <h3 className="text-lg font-semibold mb-2">{children}</h3>;
+  }
+  return <h4 className="text-base font-semibold mb-2">{children}</h4>;
+};
 
 export default function ChatList({
   messages,
@@ -197,14 +217,50 @@ export default function ChatList({
                     />
                   </Avatar>
                   <span className="bg-accent p-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
-                    {message.content.split("\n").map((line, index) => (
-                      <React.Fragment key={index}>
-                        {line}
-                        {index < message.content.split("\n").length - 1 && (
-                          <br className="leading-[1.2]" />
-                        )}
-                      </React.Fragment>
-                    ))}
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({ children }) => (
+                          <p className="mb-2 last:mb-0">{children}</p>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc pl-4 mb-2 last:mb-0">
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal pl-4 mb-2 last:mb-0">
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li className="mb-1">{children}</li>
+                        ),
+                        strong: ({ children }) => (
+                          <span className="font-bold">{children}</span>
+                        ),
+                        h1: ({ children }) => (
+                          <CustomHeader level={1}>{children}</CustomHeader>
+                        ),
+                        h2: ({ children }) => (
+                          <CustomHeader level={2}>{children}</CustomHeader>
+                        ),
+                        h3: ({ children }) => (
+                          <CustomHeader level={3}>{children}</CustomHeader>
+                        ),
+                        h4: ({ children }) => (
+                          <CustomHeader level={4}>{children}</CustomHeader>
+                        ),
+                        h5: ({ children }) => (
+                          <CustomHeader level={5}>{children}</CustomHeader>
+                        ),
+                        h6: ({ children }) => (
+                          <CustomHeader level={6}>{children}</CustomHeader>
+                        ),
+                      }}
+                    >
+                      {processMessageContent(message.content)}
+                    </ReactMarkdown>
                     {isLoading &&
                       messages.indexOf(message) === messages.length - 1 && (
                         <span className="animate-pulse" aria-label="Typing">
@@ -217,6 +273,7 @@ export default function ChatList({
             </div>
           </motion.div>
         ))}
+
         {loadingSubmit && (
           <div className="flex pl-4 pb-4 gap-2 items-center">
             <Avatar className="flex justify-start items-center">

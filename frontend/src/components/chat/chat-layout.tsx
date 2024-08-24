@@ -29,12 +29,13 @@ interface ChatLayoutProps {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   shoppingResults?: ShoppingResult[];
   resetChat: () => void;
+  isCollapsed: boolean;
 }
 
 type MergedProps = ChatLayoutProps & ChatProps;
 
 export function ChatLayout({
-  defaultLayout = [30, 160],
+  defaultLayout = [160, 80],
   defaultCollapsed = false,
   navCollapsedSize,
   messages,
@@ -50,8 +51,8 @@ export function ChatLayout({
   setInput,
   shoppingResults,
   resetChat,
+  isCollapsed,
 }: MergedProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -71,6 +72,10 @@ export function ChatLayout({
     };
   }, []);
 
+  useEffect(() => {
+    window.dispatchEvent(new Event("resize"));
+  }, [isCollapsed]);
+
   return (
     <ResizablePanelGroup
       direction="horizontal"
@@ -83,7 +88,7 @@ export function ChatLayout({
     >
       <ResizablePanel
         className="h-full w-full flex justify-center"
-        defaultSize={defaultLayout[1]}
+        defaultSize={defaultLayout[0]}
       >
         <Chat
           messages={messages}
@@ -104,13 +109,16 @@ export function ChatLayout({
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />
       <ResizablePanel
-        defaultSize={defaultLayout[2] || 30} // Adjust this value as needed
-        minSize={isMobile ? 0 : 12}
-        maxSize={isMobile ? 0 : 30}
-        className={cn("hidden md:block")}
+        defaultSize={defaultLayout[1]}
+        minSize={isCollapsed ? 0 : 12}
+        maxSize={isCollapsed ? 0 : 30}
+        className={cn(
+          "hidden md:block",
+          isCollapsed && "!w-0 !min-w-0 !max-w-0"
+        )}
       >
         <RightPanel
-          isCollapsed={false}
+          isCollapsed={isCollapsed}
           isMobile={isMobile}
           shoppingResults={shoppingResults || []}
         />

@@ -110,15 +110,15 @@ export function ChatLayout({
       <ResizableHandle className={cn("hidden md:flex")} withHandle />
       <ResizablePanel
         defaultSize={defaultLayout[1]}
-        minSize={isCollapsed ? 0 : 12}
-        maxSize={isCollapsed ? 0 : 30}
+        minSize={12}
+        maxSize={70}
         className={cn(
           "hidden md:block",
           isCollapsed && "!w-0 !min-w-0 !max-w-0"
         )}
       >
         <RightPanel
-          isCollapsed={isCollapsed}
+          isCollapsed={false}
           isMobile={isMobile}
           shoppingResults={shoppingResults || []}
         />

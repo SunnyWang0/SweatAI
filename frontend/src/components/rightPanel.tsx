@@ -19,7 +19,7 @@ export function RightPanel({
 }: RightPanelProps) {
   return (
     <div
-      data-collapsed={isCollapsed}
+      data-collapsed={false}
       className="relative justify-between group lg:bg-accent/20 lg:dark:bg-card/35 flex flex-col h-full gap-4 p-2 data-[collapsed=true]:p-2"
     >
       <ScrollArea className="flex-1">

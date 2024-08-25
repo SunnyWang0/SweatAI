@@ -74,21 +74,21 @@ export default function ChatBottombar({
   }, [isLoading]);
 
   return (
-    <div className="p-4 pb-7 flex justify-between w-full items-center gap-2">
+    <div className="p-2 sm:p-4 pb-3 sm:pb-7 flex justify-between w-full items-center">
       <AnimatePresence initial={false}>
-        <div className="w-full items-center flex relative gap-2">
+        <div className="w-full items-center flex relative">
           <form
             onSubmit={handleSubmit}
-            className="w-full items-center flex relative gap-2"
+            className="w-full items-center flex relative"
           >
             <Button
               onClick={resetChat}
-              className="shrink-0 rounded-full absolute left-3 z-10"
+              className="shrink-0 rounded-full absolute left-2 sm:left-3 z-10"
               variant="ghost"
               size="icon"
               type="button"
             >
-              <RotateCcw className="w-5 h-5" />
+              <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
             <TextareaAutosize
               autoComplete="off"
@@ -100,9 +100,9 @@ export default function ChatBottombar({
               onChange={handleInputChange}
               name="message"
               placeholder={!isListening ? "Ask Me Anything" : "Listening"}
-              className="max-h-24 px-14 bg-accent py-[22px] text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-full flex items-center h-16 resize-none overflow-hidden dark:bg-card pr-20 pl-14"
+              className="max-h-24 px-10 sm:px-14 bg-accent py-3 sm:py-[22px] text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-full flex items-center h-12 sm:h-16 resize-none overflow-hidden dark:bg-card pr-20 sm:pr-24 pl-10 sm:pl-14"
             />
-            <div className="flex absolute right-3 items-center space-x-2">
+            <div className="flex absolute right-2 sm:right-3 items-center space-x-1 sm:space-x-2">
               {!isLoading ? (
                 <>
                   {isListening ? (
@@ -114,7 +114,7 @@ export default function ChatBottombar({
                       onClick={handleListenClick}
                       disabled={isLoading}
                     >
-                      <Mic className="w-5 h-5" />
+                      <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span className="animate-pulse absolute h-[120%] w-[120%] rounded-full bg-blue-500/30" />
                     </Button>
                   ) : (
@@ -126,7 +126,7 @@ export default function ChatBottombar({
                       onClick={handleListenClick}
                       disabled={isLoading}
                     >
-                      <Mic className="w-5 h-5" />
+                      <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
                   )}
                   <Button
@@ -136,7 +136,7 @@ export default function ChatBottombar({
                     type="submit"
                     disabled={isLoading || !input.trim() || isListening}
                   >
-                    <SendHorizonal className="w-5 h-5" />
+                    <SendHorizonal className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
                 </>
               ) : (
@@ -148,7 +148,7 @@ export default function ChatBottombar({
                     type="button"
                     disabled={true}
                   >
-                    <Mic className="w-5 h-5" />
+                    <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
                   <Button
                     className="shrink-0 rounded-full"
@@ -160,7 +160,7 @@ export default function ChatBottombar({
                       stop();
                     }}
                   >
-                    <StopIcon className="w-5 h-5" />
+                    <StopIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
                 </>
               )}

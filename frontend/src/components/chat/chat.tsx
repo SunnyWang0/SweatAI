@@ -50,24 +50,26 @@ export default function Chat({
   setMessages,
 }: ChatProps) {
   return (
-    <div className="flex flex-col justify-between w-10/12 h-full ">
+    <div className="flex flex-col justify-between w-full sm:w-10/12 h-full relative">
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none"></div>
       <ChatTopbar />
-      <ChatList
-        messages={messages}
-        input={input}
-        handleInputChange={handleInputChange}
-        handleSubmit={handleSubmit}
-        isLoading={isLoading}
-        loadingSubmit={loadingSubmit}
-        error={error}
-        stop={stop}
-        formRef={formRef}
-        isMobile={isMobile}
-        shoppingResults={shoppingResults}
-        resetChat={resetChat}
-        setMessages={setMessages}
-      />
-
+      <div className="flex-grow overflow-hidden -mt-24 pt-24">
+        <ChatList
+          messages={messages}
+          input={input}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          isLoading={isLoading}
+          loadingSubmit={loadingSubmit}
+          error={error}
+          stop={stop}
+          formRef={formRef}
+          isMobile={isMobile}
+          shoppingResults={shoppingResults}
+          resetChat={resetChat}
+          setMessages={setMessages}
+        />
+      </div>
       <ChatBottombar
         messages={messages}
         input={input}

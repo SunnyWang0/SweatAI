@@ -165,7 +165,6 @@ export async function POST(req: NextRequest) {
           temperature: 0.6,
           max_tokens: 2048,
           top_p: 0.9,
-          frequency_penalty: 0.6,
         });
 
         let fullResponse = "";

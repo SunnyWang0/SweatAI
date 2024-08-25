@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import CodeDisplayBlock from "../code-display-block";
 import Image from "next/image";
 
 export interface ShoppingResult {
@@ -28,7 +27,7 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
   }>({});
 
   const addToCart = (itemName: string) => {
-    console.log(`Added ${itemName} to cart`);
+    //console.log(`Added ${itemName} to cart`);
     // Implement actual cart functionality here
   };
 
@@ -39,8 +38,6 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
   if (!results || results.length === 0) {
     return null;
   }
-
-  console.log(results);
 
   return (
     <div className="p-6 border h-full bg-gray-50 dark:bg-card">

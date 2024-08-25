@@ -47,7 +47,7 @@ export default function Home() {
 
   useEffect(() => {
     if (messages.length < 1) {
-      console.log("Generating chat id");
+      //console.log("Generating chat id");
       const id = uuidv4();
       setChatId(id);
     }

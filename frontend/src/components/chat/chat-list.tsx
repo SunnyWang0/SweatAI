@@ -1,16 +1,14 @@
-import { Message, useChat } from "ai/react";
+import { Message } from "ai/react";
 import React, { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ChatProps } from "./chat";
 import Image from "next/image";
-import CodeDisplayBlock from "../code-display-block";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { INITIAL_QUESTIONS } from "@/utils/initial-questions";
 import { Button } from "../ui/button";
-import ShoppingResults from "./shopping-results";
 
 const CustomMarkdown = ({ content }: { content: string }) => (
   <Markdown
@@ -46,6 +44,7 @@ export default function ChatList({
   const [localStorageIsLoading, setLocalStorageIsLoading] =
     React.useState(true);
   const [initialQuestions, setInitialQuestions] = React.useState<Message[]>([]);
+  const [isSearchingProducts, setIsSearchingProducts] = React.useState(false);
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -81,6 +80,14 @@ export default function ChatList({
       );
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    if (isLoading && messages[messages.length - 1]?.role === "assistant") {
+      setIsSearchingProducts(true);
+    } else {
+      setIsSearchingProducts(false);
+    }
+  }, [isLoading, messages]);
 
   const onClickQuestion = (value: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -153,8 +160,6 @@ export default function ChatList({
     );
   }
 
-  console.log("About to render ShoppingResults component");
-
   return (
     <div
       id="scroller"
@@ -217,7 +222,9 @@ export default function ChatList({
                     {isLoading &&
                       messages.indexOf(message) === messages.length - 1 && (
                         <span className="animate-pulse" aria-label="Typing">
-                          ...
+                          {isSearchingProducts
+                            ? "Searching products..."
+                            : "..."}
                         </span>
                       )}
                   </span>

@@ -12,10 +12,10 @@ export const INITIAL_QUESTIONS = [
     content: "What ares some pre-workouts that don't have caffeine?",
   },
   {
-    content: "Pre-workouts that give me energy without making me jittery",
+    content: "What are the benefits of whey protein compared to other protein supplements?",
   },
   {
-    content: "What are the benefits of BCAAs?",
+    content: "What are BCAAs?",
   },
   {
     content: "What should I look for in a protein powder?",
@@ -24,36 +24,36 @@ export const INITIAL_QUESTIONS = [
     content: "Plant-based vs. whey protein powders?",
   },
   {
-    content: "What should I eat before a workout?",
+    content: "Is creatine supplementation safe and effective for muscle building?",
   },
   {
-    content: "What is the optimal way to run to lose weight?",
+    content: "What's the recommended dosage for vitamin D supplements for athletes?",
   },
   {
-    content: "How many calories should I eat to lose weight?",
+    content: "Can magnesium supplements improve exercise performance?",
   },
   {
-    content: "What is the most optimal way to bulk?",
+    content: "What's the difference between whey protein isolate and concentrate?",
   },
   {
-    content: "How many sets should I do for each muscle group?",
+    content: "Are there any evidence-based supplements for joint health?",
   },
   {
-    content: "How do rep ranges affect muscle growth?",
+    content: "How does beta-alanine work as a pre-workout ingredient?",
   },
   {
-    content: "How often should I do cardio?",
+    content: "How effective are electrolyte supplements for endurance athletes?",
   },
   {
-    content: "Does lifting straps limit my gains?",
+    content: "How does citrulline malate improve workout performance?",
   },
   {
-    content: "What are some good leg stretches?",
+    content: "Are there any supplements that can help me lose weight?",
   },
   {
-    content: "What part of the leg does squats target?",
+    content: "How effective are protein bars compared to protein shakes",
   },
   {
-    content: "How much more can I squat with a belt?",
+    content: "What are the benefits of taking omega-3 supplements for fitness?",
   },
 ];

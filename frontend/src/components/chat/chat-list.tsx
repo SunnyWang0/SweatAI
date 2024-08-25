@@ -10,6 +10,26 @@ import remarkGfm from "remark-gfm";
 import { INITIAL_QUESTIONS } from "@/utils/initial-questions";
 import { Button } from "../ui/button";
 
+const subtitleWords = ["supplements", "protein powder", "pre-workout", "vitamins", "ashwaganda", "creatine", "BCAAs", "electrolytes", "citrulline malate", "omega-3", "joint health supplements", "beta-alanine", "magnesium", "protein bars", "protein shakes"];
+
+const ChangingText: React.FC = () => {
+  const [currentWord, setCurrentWord] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentWord((prev) => (prev + 1) % subtitleWords.length);
+    }, 1750); // Change word every X seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className="inline-block min-w-[120px] text-left pl-1">
+      <span style={{ color: '#dcbb66' }}>{subtitleWords[currentWord]}</span>
+    </span>
+  );
+};
+
 const CustomMarkdown = ({ content }: { content: string }) => (
   <Markdown
     remarkPlugins={[remarkGfm]}
@@ -119,8 +139,8 @@ export default function ChatList({
               height={90}
               className="h-28 w-20 object-contain"
             />
-            <p className="text-center text-lg font-light text-muted-foreground">
-              Hacking fitness one question at a time
+            <p className="text-center text-lg font-light text-muted-foreground flex items-center justify-center">
+              Your personal research-based shopping assistant for <ChangingText />
             </p>
           </div>
 

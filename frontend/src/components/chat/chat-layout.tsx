@@ -35,7 +35,7 @@ interface ChatLayoutProps {
 type MergedProps = ChatLayoutProps & ChatProps;
 
 export function ChatLayout({
-  defaultLayout = [160, 80],
+  defaultLayout = [160, 40],
   defaultCollapsed = false,
   navCollapsedSize,
   messages,

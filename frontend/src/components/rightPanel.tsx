@@ -19,11 +19,17 @@ export function RightPanel({
 }: RightPanelProps) {
   return (
     <div
-      data-collapsed={false}
-      className="relative justify-between group lg:bg-accent/20 lg:dark:bg-card/35 flex flex-col h-full gap-4 p-2 data-[collapsed=true]:p-2"
+      data-collapsed={isCollapsed}
+      className={cn(
+        "bg-gray-50 dark:bg-card h-full flex flex-col",
+        isCollapsed && "w-0",
+        !isCollapsed && isMobile && "w-full"
+      )}
     >
-      <ScrollArea className="flex-1">
-        <ShoppingResults results={shoppingResults} />
+      <ScrollArea className="flex-grow">
+        <div className="h-full">
+          <ShoppingResults results={shoppingResults} />
+        </div>
       </ScrollArea>
     </div>
   );

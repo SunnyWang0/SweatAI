@@ -43,8 +43,8 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
   console.log(results);
 
   return (
-    <div className="mt-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-      <h3 className="text-xl font-light font-serif mb-4 dark:text-white">
+    <div className="p-6 border h-full bg-gray-50 dark:bg-card">
+      <h3 className="text-xl font-light font-serif mb-4 dark:text-white text-center">
         Shopping Results
       </h3>
       {results.map((item, index) => (

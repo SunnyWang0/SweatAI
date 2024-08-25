@@ -12,6 +12,22 @@ import { INITIAL_QUESTIONS } from "@/utils/initial-questions";
 import { Button } from "../ui/button";
 import ShoppingResults from "./shopping-results";
 
+const CustomMarkdown = ({ content }: { content: string }) => (
+  <Markdown
+    remarkPlugins={[remarkGfm]}
+    components={{
+      h3: ({ node, ...props }) => (
+        <h3 className="text-xl font-bold my-2" {...props} />
+      ),
+      strong: ({ node, ...props }) => (
+        <strong className="font-bold" {...props} />
+      ),
+    }}
+  >
+    {content}
+  </Markdown>
+);
+
 export default function ChatList({
   messages,
   input,
@@ -161,17 +177,17 @@ export default function ChatList({
               },
             }}
             className={cn(
-              "flex flex-col gap-2 p-4 whitespace-pre-wrap",
+              "flex flex-col gap-1 py-2 px-4 whitespace-pre-wrap",
               message.role === "user" ? "items-end" : "items-start"
             )}
           >
-            <div className="flex gap-3 items-center">
+            <div className="flex gap-2 items-center">
               {message.role === "user" && (
-                <div className="flex items-end gap-3">
-                  <span className="bg-accent p-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
+                <div className="flex items-end gap-2">
+                  <span className="bg-accent py-2 px-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
                     {message.content}
                   </span>
-                  <Avatar className="flex justify-start items-center overflow-hidden">
+                  <Avatar className="flex justify-start items-center overflow-hidden w-6 h-6">
                     <AvatarImage
                       src="/user.png"
                       alt="user"
@@ -187,7 +203,7 @@ export default function ChatList({
               )}
               {message.role === "assistant" && (
                 <div className="flex items-end gap-2">
-                  <Avatar className="flex justify-start items-center">
+                  <Avatar className="flex justify-start items-center w-6 h-6">
                     <AvatarImage
                       src="/sweat.png"
                       alt="AI"
@@ -196,15 +212,8 @@ export default function ChatList({
                       className="object-contain"
                     />
                   </Avatar>
-                  <span className="bg-accent p-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
-                    {message.content.split("\n").map((line, index) => (
-                      <React.Fragment key={index}>
-                        {line}
-                        {index < message.content.split("\n").length - 1 && (
-                          <br className="leading-[1.2]" />
-                        )}
-                      </React.Fragment>
-                    ))}
+                  <span className="bg-accent py-2 px-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
+                    <CustomMarkdown content={message.content} />
                     {isLoading &&
                       messages.indexOf(message) === messages.length - 1 && (
                         <span className="animate-pulse" aria-label="Typing">

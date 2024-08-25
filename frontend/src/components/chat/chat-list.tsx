@@ -25,7 +25,7 @@ const ChangingText: React.FC = () => {
 
   return (
     <span className="inline-block min-w-[120px] text-left pl-1">
-      <span style={{ color: '#dcbb66' }}>{subtitleWords[currentWord]}</span>
+      <span style={{ color: '#ddbc69' }}>{subtitleWords[currentWord]}</span>
     </span>
   );
 };

@@ -35,7 +35,7 @@ interface ChatLayoutProps {
 type MergedProps = ChatLayoutProps & ChatProps;
 
 export function ChatLayout({
-  defaultLayout = [160, 40],
+  defaultLayout = [70, 30],
   defaultCollapsed = false,
   navCollapsedSize,
   messages,
@@ -88,7 +88,8 @@ export function ChatLayout({
     >
       <ResizablePanel
         className="h-full w-full flex justify-center"
-        defaultSize={defaultLayout[0]}
+        defaultSize={80}
+        minSize={50}
       >
         <Chat
           messages={messages}
@@ -109,9 +110,9 @@ export function ChatLayout({
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />
       <ResizablePanel
-        defaultSize={defaultLayout[1]}
-        minSize={12}
-        maxSize={70}
+        defaultSize={20}
+        minSize={20}
+        maxSize={35}
         className={cn(
           "hidden md:block",
           isCollapsed && "!w-0 !min-w-0 !max-w-0"

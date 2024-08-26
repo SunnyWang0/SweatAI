@@ -40,7 +40,7 @@ const ChangingText: React.FC = () => {
   }, []);
 
   return (
-    <span className="inline-block min-w-[120px] text-center pl-1">
+    <span className="inline-block min-w-[120px] text-center sm:text-left sm:ml-1">
       <span style={{ color: "#ddbc69" }}>{subtitleWords[currentWord]}</span>
     </span>
   );
@@ -148,7 +148,7 @@ export default function ChatList({
 
   if (messages.length === 0) {
     return (
-      <div className="w-full h-full flex justify-center items-center font-serif">
+      <div className="w-full h-full flex justify-center items-center">
         <div className="relative flex flex-col gap-4 items-center justify-center w-full h-full">
           <div></div>
           <div className="flex flex-col gap-4 items-center mt-[-200px]">
@@ -160,15 +160,15 @@ export default function ChatList({
               className="h-28 w-20 object-contain"
             />
             <p
-              className="text-center text-lg font-light flex flex-col items-center justify-center"
+              className="text-center text-lg  font-light flex flex-col sm:flex-row items-center justify-center"
               style={{ color: "#ddbc69" }}
             >
-              <span className="sm:hidden">
+              <span className="sm:hidden text-gray-400">
                 Your personal research-based
                 <br />
                 shopping assistant for
               </span>
-              <span className="hidden sm:inline">
+              <span className="hidden sm:inline text-white text-gray-400">
                 Your personal research-based shopping assistant for
               </span>
               <ChangingText />

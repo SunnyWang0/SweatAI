@@ -40,7 +40,6 @@ export default function Home() {
 
   const resetChat = () => {
     setMessages([]);
-    setShoppingResults([]);
     setChatId(uuidv4());
     localStorage.removeItem(`chat_${chatId}`);
   };
@@ -129,7 +128,10 @@ export default function Home() {
       }
 
       if (newShoppingResults.length > 0) {
-        setShoppingResults(newShoppingResults);
+        setShoppingResults((prevResults) => [
+          ...newShoppingResults,
+          ...prevResults,
+        ]);
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");

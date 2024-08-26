@@ -25,7 +25,8 @@ interface ShoppingResultsProps {
 const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
   const [expandedItems, setExpandedItems] = useState<{
     [key: number]: boolean;
-  }>({});
+  }>(() => Object.fromEntries(results.map((_, index) => [index, false])));
+
   const [windowHeight, setWindowHeight] = useState(0);
 
   useEffect(() => {
@@ -36,11 +37,6 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
     window.addEventListener("resize", updateHeight);
     return () => window.removeEventListener("resize", updateHeight);
   }, []);
-
-  const addToCart = (itemName: string) => {
-    //console.log(`Added ${itemName} to cart`);
-    // Implement actual cart functionality here
-  };
 
   const toggleDetails = (index: number) => {
     setExpandedItems((prev) => ({ ...prev, [index]: !prev[index] }));

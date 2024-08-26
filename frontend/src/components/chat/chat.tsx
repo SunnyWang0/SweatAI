@@ -51,7 +51,7 @@ export default function Chat({
 }: ChatProps) {
   return (
     <div className="flex flex-col justify-between w-full sm:w-10/12 h-full relative">
-      <div className="absolute top-0 left-0 right-0 h-24 z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 right-0 h-24 z-100 pointer-events-none"></div>
       <ChatTopbar />
       <div className="flex-grow overflow-hidden -mt-24 pt-24">
         <ChatList

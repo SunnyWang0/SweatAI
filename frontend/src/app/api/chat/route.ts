@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Anthropic } from "@anthropic-ai/sdk";
-import OpenAI from "openai";
+import OpenAI from 'openai';
 import { ShoppingResult } from "../../../components/chat/chat-layout";
 import { Message } from "ai";
 
@@ -159,15 +159,15 @@ export async function POST(req: NextRequest) {
           content: msg.content,
         }));
         const stream = await PerplexityClient.chat.completions.create({
-          model: "llama-3.1-sonar-large-128k-online",
+          model: "llama-3.1-sonar-small-128k-online",
           messages: [
             { role: "system", content: shopper_system_message },
-            ...perplexityMessages,
+            ...perplexityMessages
           ],
           stream: true,
-          temperature: 0.6,
-          max_tokens: 2048,
-          top_p: 0.9,
+          temperature: 0.5, 
+          max_tokens: 500, 
+          top_p: 0.6,
         });
 
         let fullResponse = "";
@@ -182,12 +182,14 @@ export async function POST(req: NextRequest) {
               if (content.includes("<")) {
                 stopStreaming = true;
                 // Send the last part of the response before "<"
-                const lastValidPart = fullResponse.split("<")[0].trim();
+                const lastValidPart = fullResponse.split("<")[0];
                 controller.enqueue(
                   encoder.encode(
                     JSON.stringify({
                       type: "assistant_response",
-                      content: lastValidPart,
+                      content: lastValidPart.slice(
+                        lastValidPart.lastIndexOf("\n") + 1
+                      ),
                     }) + "\n"
                   )
                 );
@@ -213,8 +215,7 @@ export async function POST(req: NextRequest) {
         if (query) {
           const shoppingResults = await getRequestGoogleShopping(query);
           if (shoppingResults) {
-            for (const item of shoppingResults.slice(0, 2)) {
-              //Number of results to display
+            for (const item of shoppingResults.slice(0, 2)) { //Number of results to display
               const scrapedContent = await scrapeJina(item.link);
               const formulaResponse = await ClaudeClient.messages.create({
                 model: "claude-3-haiku-20240307",
@@ -229,8 +230,7 @@ export async function POST(req: NextRequest) {
                 ],
               });
 
-              const formula = (formulaResponse.content[0] as { text: string })
-                .text;
+              const formula = (formulaResponse.content[0] as { text: string }).text;
 
               const result: ShoppingResult = {
                 title: item.title,

@@ -60,9 +60,13 @@ const CustomMarkdown = ({ content }: { content: string }) => (
       strong: ({ node, ...props }) => (
         <strong style={{ color: "#ddbc69" }} {...props} />
       ),
+      p: ({ children }) => <p className="mb-2">{children}</p>,
+      ul: ({ children }) => <ul className="mb-2 ml-4">{children}</ul>,
+      ol: ({ children }) => <ol className="mb-2 ml-4">{children}</ol>,
+      li: ({ children }) => <li className="mb-1">{children}</li>,
     }}
   >
-    {content}
+    {content.replace(/\n{2,}/g, "\n").trim()}
   </Markdown>
 );
 

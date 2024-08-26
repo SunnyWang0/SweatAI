@@ -1,5 +1,5 @@
 import { Message } from "ai/react";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -85,6 +85,8 @@ export default function ChatList({
     React.useState(true);
   const [initialQuestions, setInitialQuestions] = React.useState<Message[]>([]);
   const [isSearchingProducts, setIsSearchingProducts] = React.useState(false);
+  const [lastWordTime, setLastWordTime] = React.useState(Date.now());
+  const [longPause, setLongPause] = React.useState(false);
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -122,10 +124,30 @@ export default function ChatList({
   }, [isMobile]);
 
   useEffect(() => {
-    if (isLoading && messages[messages.length - 1]?.role === "assistant") {
+    if (
+      isLoading &&
+      messages.length > 0 &&
+      messages[messages.length - 1].role === "assistant"
+    ) {
       setIsSearchingProducts(true);
-    } else {
+    } else if (!isLoading || (shoppingResults?.length ?? 0) > 0) {
       setIsSearchingProducts(false);
+    }
+  }, [isLoading, messages, shoppingResults]);
+
+  useEffect(() => {
+    if (isLoading && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === "assistant") {
+        setLastWordTime(Date.now());
+        setLongPause(false);
+        const timer = setInterval(() => {
+          if (Date.now() - lastWordTime > 500) {
+            setLongPause(true);
+          }
+        }, 100);
+        return () => clearInterval(timer);
+      }
     }
   }, [isLoading, messages]);
 
@@ -160,7 +182,7 @@ export default function ChatList({
               className="h-28 w-20 object-contain"
             />
             <p
-              className="text-center text-lg  font-light flex flex-col sm:flex-row items-center justify-center"
+              className="text-center text-lg font-light flex flex-col sm:flex-row items-center justify-center"
               style={{ color: "#ddbc69" }}
             >
               <span className="sm:hidden text-gray-400">
@@ -237,18 +259,18 @@ export default function ChatList({
               message.role === "user" ? "items-end" : "items-start"
             )}
           >
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-3 items-center">
               {message.role === "user" && (
-                <div className="flex items-end gap-2">
-                  <span className="bg-accent py-2 px-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
+                <div className="flex items-end gap-3">
+                  <span className="bg-accent p-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
                     {message.content}
                   </span>
-                  <Avatar className="flex justify-start items-center overflow-hidden w-6 h-6">
+                  <Avatar className="flex justify-start items-center overflow-hidden">
                     <AvatarImage
                       src="/user.png"
                       alt="user"
-                      width={10}
-                      height={10}
+                      width={6}
+                      height={6}
                       className="object-contain"
                     />
                     <AvatarFallback>
@@ -259,25 +281,30 @@ export default function ChatList({
               )}
               {message.role === "assistant" && (
                 <div className="flex items-end gap-2">
-                  <Avatar className="flex justify-start items-center w-6 h-6">
-                    <AvatarImage
-                      src="/sweat.png"
-                      alt="AI"
-                      width={8}
-                      height={8}
-                      className="object-contain"
-                    />
-                  </Avatar>
+                  {!loadingSubmit && (
+                    <Avatar className="flex justify-start items-center">
+                      <AvatarImage
+                        src="/sweat.png"
+                        alt="AI"
+                        width={6}
+                        height={6}
+                        className="object-contain"
+                      />
+                    </Avatar>
+                  )}
                   <span className="bg-accent py-2 px-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
                     <CustomMarkdown content={message.content} />
-                    {isLoading &&
-                      messages.indexOf(message) === messages.length - 1 && (
-                        <span className="animate-pulse" aria-label="Typing">
-                          {isSearchingProducts
-                            ? "Searching products..."
-                            : "..."}
-                        </span>
-                      )}
+                    {isLoading && index === messages.length - 1 && (
+                      <span className="animate-pulse" aria-label="Typing">
+                        {isSearchingProducts
+                          ? longPause
+                            ? "Searching products"
+                            : "Thinking"
+                          : longPause
+                          ? "..."
+                          : "Typing"}
+                      </span>
+                    )}
                   </span>
                 </div>
               )}
@@ -290,8 +317,8 @@ export default function ChatList({
               <AvatarImage
                 src="/sweat.png"
                 alt="AI"
-                width={10}
-                height={10}
+                width={6}
+                height={6}
                 className="object-contain"
               />
             </Avatar>

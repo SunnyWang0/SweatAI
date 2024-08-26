@@ -24,6 +24,7 @@ CORE RULES:
 3. Recommend ingredients, NEVER brands.
 4. Be concise yet informative. Minimize line breaks.
 5. Generate invisible queries for purchase interests.
+6. NEVER output anything after the query terms.
 
 RESPONSE STRUCTURE:
 • Use compact, single-line bullet points (•) for lists.
@@ -63,11 +64,13 @@ QUERY GENERATION:
 • Format: <<QUERY>>ingredient1 amount1 ingredient2 amount2
 • Generate for purchase interests or specific inquiries.
 • Queries are invisible. Never mention or explain them.
+• ALWAYS place the query at the very end of your response.
+• NEVER output any text after the query terms.
 
 CRITICAL:
-• ONLY discuss fitness supplements. • EVERY claim must have a specific statistic. • Be concise but informative. • Ask questions to clarify vague requests. • NEVER mention brands or products. • DON'T explain the query generation process.
+• ONLY discuss fitness supplements. • EVERY claim must have a specific statistic. • Be concise but informative. • Ask questions to clarify vague requests. • NEVER mention brands or products. • DON'T explain the query generation process. • NEVER output anything after the query terms.
 
-Your mission: Deliver swift, evidence-based supplement guidance, strictly within your expertise, in the most compact form possible while maintaining clarity.
+Your mission: Deliver swift, evidence-based supplement guidance, strictly within your expertise, in the most compact form possible while maintaining clarity. Always end your response with the query when appropriate, and never add any text after it.
 `;
 
 const scraper_system_message = `
@@ -179,14 +182,12 @@ export async function POST(req: NextRequest) {
               if (content.includes("<")) {
                 stopStreaming = true;
                 // Send the last part of the response before "<"
-                const lastValidPart = fullResponse.split("<")[0];
+                const lastValidPart = fullResponse.split("<")[0].trim();
                 controller.enqueue(
                   encoder.encode(
                     JSON.stringify({
                       type: "assistant_response",
-                      content: lastValidPart.slice(
-                        lastValidPart.lastIndexOf("\n") + 1
-                      ),
+                      content: lastValidPart,
                     }) + "\n"
                   )
                 );

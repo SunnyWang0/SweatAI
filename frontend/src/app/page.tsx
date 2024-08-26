@@ -185,12 +185,11 @@ export default function Home() {
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center relative">
       <button
-        className="fixed left-4 top-1/4 -translate-x-full rotate-[90deg] origin-right
-                   bg-accent text-[#ddbc69] border border-[#ddbc69] rounded-t-md
-                   px-4 py-2 font-normal hover:translate-x-[-95%] transition-transform"
+        className="fixed left-0 top-1/4 flex items-center bg-accent border-y border-r border-[#ddbc69] 
+                 rounded-r-md px-2 py-2 mr-1 hover:left-1 transition-all group overflow-hidden"
         onClick={() => setIsFeedbackModalOpen(true)}
       >
-        Feedback
+        <div className="flex flex-col">Feedback</div>
       </button>
       <FeedbackModal
         isOpen={isFeedbackModalOpen}

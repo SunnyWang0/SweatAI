@@ -8,6 +8,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { ShoppingResult } from "../components/chat/shopping-results";
+import FeedbackModal from "../components/chat/feedback-modal";
 
 export default function Home() {
   const {
@@ -37,6 +38,7 @@ export default function Home() {
   const [loadingSubmit, setLoadingSubmit] = React.useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [shoppingResults, setShoppingResults] = useState<ShoppingResult[]>([]);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   const resetChat = () => {
     setMessages([]);
@@ -181,7 +183,19 @@ export default function Home() {
   }, [shoppingResults]);
 
   return (
-    <main className="flex h-[calc(100dvh)] flex-col items-center ">
+    <main className="flex h-[calc(100dvh)] flex-col items-center relative">
+      <button
+        className="fixed left-4 top-1/4 -translate-x-full rotate-[90deg] origin-right
+                   bg-accent text-[#ddbc69] border border-[#ddbc69] rounded-t-md
+                   px-4 py-2 font-normal hover:translate-x-[-95%] transition-transform"
+        onClick={() => setIsFeedbackModalOpen(true)}
+      >
+        Feedback
+      </button>
+      <FeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
+      />
       <ChatLayout
         messages={messages}
         input={input}

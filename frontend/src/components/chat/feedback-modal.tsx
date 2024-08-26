@@ -37,19 +37,19 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      className=" font-serif fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center"
       onClick={onClose} // Close when clicking the overlay
     >
       <div
-        className="bg-card p-8 rounded-xl w-[600px] max-w-[90vw]"
+        className="bg-card p-4 rounded-xl w-[600px] max-w-[90vw]"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the modal itself
       >
-        <h2 className="text-3xl mb-6 text-[#ddbc69] text-center">
+        <h2 className="text-3xl mb-6 text-white text-center">
           Provide Feedback
         </h2>
         <form onSubmit={handleSubmit}>
           <textarea
-            className="w-full h-64 p-3 border rounded-lg mb-6 bg-accent text-white"
+            className="w-full border border-[#ddbc69] h-64 p-3 border rounded-lg mb-6 bg-accent text-white"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Enter your feedback here..."

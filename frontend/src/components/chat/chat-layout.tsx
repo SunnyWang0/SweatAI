@@ -13,6 +13,7 @@ import Chat, { ChatProps } from "./chat";
 import ChatList from "./chat-list";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { RightPanel } from "../rightPanel";
+import FeedbackModal from "./feedback-modal";
 
 export interface ShoppingResult {
   title: string;
@@ -54,6 +55,7 @@ export function ChatLayout({
   isCollapsed,
 }: MergedProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const checkScreenWidth = () => {
@@ -106,6 +108,10 @@ export function ChatLayout({
           shoppingResults={shoppingResults}
           resetChat={resetChat}
           setMessages={setMessages}
+        />
+        <FeedbackModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
         />
       </ResizablePanel>
       <ResizableHandle className={cn("hidden md:flex")} withHandle />

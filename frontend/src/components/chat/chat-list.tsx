@@ -240,7 +240,7 @@ export default function ChatList({
   return (
     <div
       id="scroller"
-      className="w-full overflow-y-scroll overflow-x-hidden h-full justify-end font-serif"
+      className="w-full overflow-y-scroll overflow-x-hidden h-full justify-end font-serif pt-24"
     >
       <div className="w-full flex flex-col overflow-x-hidden overflow-y-hidden min-h-full justify-end">
         {messages.map((message, index) => (

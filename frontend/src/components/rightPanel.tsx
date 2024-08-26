@@ -21,7 +21,7 @@ export function RightPanel({
     <div
       data-collapsed={isCollapsed}
       className={cn(
-        "bg-gray-50 dark:bg-card h-full flex flex-col",
+        "bg-gray-50 dark:bg-card h-full",
         isCollapsed && "w-0",
         !isCollapsed && isMobile && "w-full"
       )}

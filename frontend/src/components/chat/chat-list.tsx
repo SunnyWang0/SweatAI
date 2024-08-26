@@ -10,7 +10,23 @@ import remarkGfm from "remark-gfm";
 import { INITIAL_QUESTIONS } from "@/utils/initial-questions";
 import { Button } from "../ui/button";
 
-const subtitleWords = ["supplements", "protein powder", "pre-workout", "vitamins", "ashwaganda", "creatine", "BCAAs", "electrolytes", "citrulline malate", "omega-3", "joint health supplements", "beta-alanine", "magnesium", "protein bars", "protein shakes"];
+const subtitleWords = [
+  "supplements",
+  "protein powder",
+  "pre-workout",
+  "vitamins",
+  "ashwaganda",
+  "creatine",
+  "BCAAs",
+  "electrolytes",
+  "citrulline malate",
+  "omega-3",
+  "joint health supplements",
+  "beta-alanine",
+  "magnesium",
+  "protein bars",
+  "protein shakes",
+];
 
 const ChangingText: React.FC = () => {
   const [currentWord, setCurrentWord] = React.useState(0);
@@ -24,8 +40,8 @@ const ChangingText: React.FC = () => {
   }, []);
 
   return (
-    <span className="inline-block min-w-[120px] text-left pl-1">
-      <span style={{ color: '#ddbc69' }}>{subtitleWords[currentWord]}</span>
+    <span className="inline-block min-w-[120px] text-center pl-1">
+      <span style={{ color: "#ddbc69" }}>{subtitleWords[currentWord]}</span>
     </span>
   );
 };
@@ -35,10 +51,14 @@ const CustomMarkdown = ({ content }: { content: string }) => (
     remarkPlugins={[remarkGfm]}
     components={{
       h3: ({ node, ...props }) => (
-        <h3 className="text-xl font-bold my-2" {...props} />
+        <h3
+          style={{ color: "#ddbc69" }}
+          className="text-xl font-bold my-2"
+          {...props}
+        />
       ),
       strong: ({ node, ...props }) => (
-        <strong className="font-bold" {...props} />
+        <strong style={{ color: "#ddbc69" }} {...props} />
       ),
     }}
   >
@@ -128,7 +148,7 @@ export default function ChatList({
 
   if (messages.length === 0) {
     return (
-      <div className="w-full h-full flex justify-center items-center">
+      <div className="w-full h-full flex justify-center items-center font-serif">
         <div className="relative flex flex-col gap-4 items-center justify-center w-full h-full">
           <div></div>
           <div className="flex flex-col gap-4 items-center mt-[-200px]">
@@ -139,8 +159,19 @@ export default function ChatList({
               height={90}
               className="h-28 w-20 object-contain"
             />
-            <p className="text-center text-lg font-light text-muted-foreground flex items-center justify-center">
-              Your personal research-based shopping assistant for <ChangingText />
+            <p
+              className="text-center text-lg font-light flex flex-col items-center justify-center"
+              style={{ color: "#ddbc69" }}
+            >
+              <span className="sm:hidden">
+                Your personal research-based
+                <br />
+                shopping assistant for
+              </span>
+              <span className="hidden sm:inline">
+                Your personal research-based shopping assistant for
+              </span>
+              <ChangingText />
             </p>
           </div>
 
@@ -183,7 +214,7 @@ export default function ChatList({
   return (
     <div
       id="scroller"
-      className="w-full overflow-y-scroll overflow-x-hidden h-full justify-end"
+      className="w-full overflow-y-scroll overflow-x-hidden h-full justify-end font-serif"
     >
       <div className="w-full flex flex-col overflow-x-hidden overflow-y-hidden min-h-full justify-end">
         {messages.map((message, index) => (
@@ -216,8 +247,8 @@ export default function ChatList({
                     <AvatarImage
                       src="/user.png"
                       alt="user"
-                      width={6}
-                      height={6}
+                      width={10}
+                      height={10}
                       className="object-contain"
                     />
                     <AvatarFallback>
@@ -232,8 +263,8 @@ export default function ChatList({
                     <AvatarImage
                       src="/sweat.png"
                       alt="AI"
-                      width={6}
-                      height={6}
+                      width={8}
+                      height={8}
                       className="object-contain"
                     />
                   </Avatar>
@@ -259,8 +290,8 @@ export default function ChatList({
               <AvatarImage
                 src="/sweat.png"
                 alt="AI"
-                width={6}
-                height={6}
+                width={10}
+                height={10}
                 className="object-contain"
               />
             </Avatar>

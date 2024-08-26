@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Anthropic } from "@anthropic-ai/sdk";
-import OpenAI from 'openai';
+import OpenAI from "openai";
 import { ShoppingResult } from "../../../components/chat/chat-layout";
 import { Message } from "ai";
 
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
           model: "llama-3.1-sonar-large-128k-online",
           messages: [
             { role: "system", content: shopper_system_message },
-            ...perplexityMessages
+            ...perplexityMessages,
           ],
           stream: true,
           temperature: 0.6,
@@ -212,7 +212,8 @@ export async function POST(req: NextRequest) {
         if (query) {
           const shoppingResults = await getRequestGoogleShopping(query);
           if (shoppingResults) {
-            for (const item of shoppingResults.slice(0, 2)) { //Number of results to display
+            for (const item of shoppingResults.slice(0, 2)) {
+              //Number of results to display
               const scrapedContent = await scrapeJina(item.link);
               const formulaResponse = await ClaudeClient.messages.create({
                 model: "claude-3-haiku-20240307",
@@ -227,7 +228,8 @@ export async function POST(req: NextRequest) {
                 ],
               });
 
-              const formula = (formulaResponse.content[0] as { text: string }).text;
+              const formula = (formulaResponse.content[0] as { text: string })
+                .text;
 
               const result: ShoppingResult = {
                 title: item.title,

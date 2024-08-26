@@ -95,14 +95,15 @@ export default function ChatBottombar({
               value={
                 isListening ? (transcript.length ? transcript : "") : input
               }
+              style={{ borderColor: "#ddbc69" }}
               ref={inputRef}
               onKeyDown={handleKeyPress}
               onChange={handleInputChange}
               name="message"
               placeholder={!isListening ? "Ask Me Anything" : "Listening"}
-              className="max-h-24 px-10 sm:px-14 bg-accent py-3 sm:py-[22px] text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-full flex items-center h-12 sm:h-16 resize-none overflow-hidden dark:bg-card pr-20 sm:pr-24 pl-10 sm:pl-14"
+              className="max-h-24 px-10 font-serif sm:px-14 bg-accent py-3 sm:py-[22px] text-sm border placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-full flex items-center h-12 sm:h-16 resize-none overflow-hidden dark:bg-card pr-20 sm:pr-24 pl-10 sm:pl-14"
             />
-            <div className="flex absolute right-2 sm:right-3 items-center space-x-1 sm:space-x-2">
+            <div className="flex absolute right-2 sm:right-3 items-center space-x-1 sm:space-x-2 ">
               {!isLoading ? (
                 <>
                   {isListening ? (

@@ -71,6 +71,7 @@ CRITICAL:
 • ONLY discuss fitness supplements. • EVERY claim must have a specific statistic. • Be concise but informative. • Ask questions to clarify vague requests. • NEVER mention brands or products. • DON'T explain the query generation process. • NEVER output anything after the query terms.
 
 Your mission: Deliver swift, evidence-based supplement guidance, strictly within your expertise, in the most compact form possible while maintaining clarity. Always end your response with the query when appropriate, and never add any text after it.
+
 `;
 
 const scraper_system_message = `
@@ -165,9 +166,9 @@ export async function POST(req: NextRequest) {
             ...perplexityMessages
           ],
           stream: true,
-          temperature: 0.5, 
-          max_tokens: 500, 
-          top_p: 0.6,
+          temperature: 0.6, 
+          max_tokens: 2048, 
+          top_p: 0.9,
         });
 
         let fullResponse = "";

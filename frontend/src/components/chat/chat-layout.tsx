@@ -24,7 +24,6 @@ export interface ShoppingResult {
 }
 
 interface ChatLayoutProps {
-  defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
@@ -36,7 +35,6 @@ interface ChatLayoutProps {
 type MergedProps = ChatLayoutProps & ChatProps;
 
 export function ChatLayout({
-  defaultLayout = [70, 30],
   defaultCollapsed = false,
   navCollapsedSize,
   messages,
@@ -56,6 +54,7 @@ export function ChatLayout({
 }: MergedProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const defaultLayout = [70, 30];
 
   useEffect(() => {
     const checkScreenWidth = () => {
@@ -119,10 +118,7 @@ export function ChatLayout({
         defaultSize={20}
         minSize={20}
         maxSize={35}
-        className={cn(
-          "hidden md:block",
-          isCollapsed && "!w-0 !min-w-0 !max-w-0"
-        )}
+        className={cn("hidden md:block")}
       >
         <RightPanel
           isCollapsed={false}

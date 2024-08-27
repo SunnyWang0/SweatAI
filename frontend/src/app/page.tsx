@@ -184,13 +184,16 @@ export default function Home() {
 
   return (
     <main className="flex h-[calc(100dvh)] flex-col items-center relative">
-      <button
-        className="fixed left-0 top-1/4 flex items-center bg-accent border-y border-r border-[#ddbc69] 
-                 rounded-r-md px-2 py-2 mr-1 hover:left-1 transition-all group overflow-hidden"
-        onClick={() => setIsFeedbackModalOpen(true)}
-      >
-        <div className="flex flex-col">Feedback</div>
-      </button>
+      <div className="fixed left-0 top-1/4 -translate-y-1/2 z-50">
+        <button
+          className="bg-zinc-800 text-white py-1 px-4 rounded-b-md
+                     transform -rotate-90 origin-top-left
+                     hover:translate-x-1 transition-transform"
+          onClick={() => setIsFeedbackModalOpen(true)}
+        >
+          Feedback
+        </button>
+      </div>
       <FeedbackModal
         isOpen={isFeedbackModalOpen}
         onClose={() => setIsFeedbackModalOpen(false)}
@@ -205,7 +208,6 @@ export default function Home() {
         error={error}
         stop={stop}
         navCollapsedSize={10}
-        defaultLayout={[30, 160]}
         isCollapsed={shoppingResults.length === 0}
         formRef={formRef}
         setMessages={

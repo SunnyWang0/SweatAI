@@ -3,8 +3,7 @@
 import { cn } from "../lib/utils";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import React from "react";
-import shoppingResults, { ShoppingResult } from "./chat/shopping-results";
-import ShoppingResults from "./chat/shopping-results";
+import ShoppingResults, { ShoppingResult } from "./chat/shopping-results";
 
 interface RightPanelProps {
   isCollapsed: boolean;
@@ -12,20 +11,9 @@ interface RightPanelProps {
   shoppingResults: ShoppingResult[];
 }
 
-export function RightPanel({
-  isCollapsed,
-  isMobile,
-  shoppingResults,
-}: RightPanelProps) {
+export function RightPanel({ isMobile, shoppingResults }: RightPanelProps) {
   return (
-    <div
-      data-collapsed={isCollapsed}
-      className={cn(
-        "bg-gray-50 dark:bg-card h-full",
-        isCollapsed && "w-0",
-        !isCollapsed && isMobile && "w-full"
-      )}
-    >
+    <div className={cn("bg-gray-50 dark:bg-card h-full", isMobile && "w-full")}>
       <ScrollArea className="flex-grow">
         <div className="h-full">
           <ShoppingResults results={shoppingResults} />

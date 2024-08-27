@@ -42,6 +42,8 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
     setExpandedItems((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
+  //test
+
   const renderPlaceholders = () => {
     return Array(5)
       .fill(null)

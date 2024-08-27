@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../providers/theme-provider";
-import { Toaster } from "../components/ui/sonner"
+import { Toaster } from "../components/ui/sonner";
 import React from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,11 +14,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: 1,
-}
+};
 
 export default function RootLayout({
   children,
@@ -28,9 +29,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark">
-            {children}
+          {children}
           <Toaster />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

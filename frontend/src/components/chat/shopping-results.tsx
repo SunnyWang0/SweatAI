@@ -20,13 +20,16 @@ export interface ShoppingResult {
 
 interface ShoppingResultsProps {
   results: ShoppingResult[];
+  isMobile: boolean;
 }
 
-const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
+const ShoppingResults: React.FC<ShoppingResultsProps> = ({
+  results,
+  isMobile,
+}) => {
   const [expandedItems, setExpandedItems] = useState<{
     [key: number]: boolean;
-  }>(() => Object.fromEntries(results.map((_, index) => [index, false])));
-
+  }>({});
   const [windowHeight, setWindowHeight] = useState(0);
 
   useEffect(() => {
@@ -42,26 +45,39 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
     setExpandedItems((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  //test
-
   const renderPlaceholders = () => {
-    return Array(5)
+    const placeholderCount = isMobile ? 3 : 5;
+    return Array(placeholderCount)
       .fill(null)
       .map((_, index) => (
         <div
           key={index}
           style={{
             borderColor: "#ddbc69",
-            opacity: 0.4 - index * 0.1, // Decrease opacity for each item
+            opacity: 0.4 - index * (0.4 / placeholderCount),
           }}
-          className="mb-6 p-4 bg-white rounded-lg shadow-md dark:bg-card border"
+          className={`mb-4 p-3 bg-white rounded-lg shadow-md dark:bg-card border ${
+            isMobile ? "text-sm" : "text-base"
+          }`}
         >
           <div className="flex justify-between items-start">
             <div className="flex items-start">
-              <div className="w-24 h-24 bg-gray-200 rounded-md mr-4"></div>
+              <div
+                className={`${
+                  isMobile ? "w-16 h-16" : "w-24 h-24"
+                } bg-gray-200 rounded-md mr-3`}
+              ></div>
               <div>
-                <div className="w-40 h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="w-20 h-6 bg-gray-200 rounded"></div>
+                <div
+                  className={`w-32 h-4 bg-gray-200 rounded mb-2 ${
+                    isMobile ? "w-24" : "w-32"
+                  }`}
+                ></div>
+                <div
+                  className={`w-16 h-6 bg-gray-200 rounded ${
+                    isMobile ? "w-12 h-5" : "w-16 h-6"
+                  }`}
+                ></div>
               </div>
             </div>
           </div>
@@ -71,11 +87,15 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({ results }) => {
 
   return (
     <ScrollAreaPrimitive.Root
-      className="overflow-hidden"
+      className="overflow-hidden h-full"
       style={{ height: `${windowHeight}px` }}
     >
       <ScrollAreaPrimitive.Viewport className="w-full h-full">
-        <div className="p-6 bg-gray-50 dark:bg-card font-serif">
+        <div
+          className={`p-4 bg-gray-50 dark:bg-card font-serif ${
+            isMobile ? "text-sm" : "text-base"
+          }`}
+        >
           <h3 className="text-xl font-light font-serif mb-4 dark:text-white text-center">
             Shopping Results
           </h3>

@@ -217,28 +217,29 @@ export async function POST(req: NextRequest) {
           const shoppingResults = await getRequestGoogleShopping(query);
           if (shoppingResults) {
             for (const item of shoppingResults.slice(0, 2)) { //Number of results to display
-              const scrapedContent = await scrapeJina(item.link);
-              const formulaResponse = await ClaudeClient.messages.create({
-                model: "claude-3-haiku-20240307",
-                max_tokens: 4096,
-                temperature: 0.1,
-                system: scraper_system_message,
-                messages: [
-                  {
-                    role: "user",
-                    content: scrapedContent,
-                  },
-                ],
-              });
+              // const scrapedContent = await scrapeJina(item.link);
+              // const formulaResponse = await ClaudeClient.messages.create({
+              //   model: "claude-3-haiku-20240307",
+              //   max_tokens: 4096,
+              //   temperature: 0.1,
+              //   system: scraper_system_message,
+              //   messages: [
+              //     {
+              //       role: "user",
+              //       content: scrapedContent,
+              //     },
+              //   ],
+              // });
 
-              const formula = (formulaResponse.content[0] as { text: string }).text;
+              // const formula = (formulaResponse.content[0] as { text: string }).text;
 
               const result: ShoppingResult = {
                 title: item.title,
                 price: item.price,
                 link: item.link,
                 thumbnail: item.thumbnail,
-                formula: formula.trim(),
+                // formula: formula.trim(),
+                formula: "Working on a fix"
               };
               controller.enqueue(
                 encoder.encode(

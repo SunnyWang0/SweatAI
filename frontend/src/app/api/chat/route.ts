@@ -239,7 +239,7 @@ export async function POST(req: NextRequest) {
                 link: item.link,
                 thumbnail: item.thumbnail,
                 // formula: formula.trim(),
-                formula: "Working on a fix"
+                formula: "Coming Soon"
               };
               controller.enqueue(
                 encoder.encode(

@@ -216,7 +216,7 @@ export async function POST(req: NextRequest) {
         if (query) {
           const shoppingResults = await getRequestGoogleShopping(query);
           if (shoppingResults) {
-            for (const item of shoppingResults.slice(0, 2)) { //Number of results to display
+            for (const item of shoppingResults.slice(0, 4)) { //Number of results to display
               // const scrapedContent = await scrapeJina(item.link);
               // const formulaResponse = await ClaudeClient.messages.create({
               //   model: "claude-3-haiku-20240307",

@@ -206,7 +206,6 @@ export default function Home() {
         loadingSubmit={loadingSubmit}
         error={error}
         stop={stop}
-        navCollapsedSize={10}
         isCollapsed={shoppingResults.length === 0}
         formRef={formRef}
         setMessages={
@@ -214,6 +213,7 @@ export default function Home() {
         }
         setInput={setInput}
         shoppingResults={shoppingResults}
+        setShoppingResults={setShoppingResults}
         resetChat={resetChat}
       />
     </main>

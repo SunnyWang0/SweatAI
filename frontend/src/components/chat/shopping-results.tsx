@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  ShoppingCart,
-  ExternalLink,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Image from "next/image";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import { Button } from "@/components/ui/button";
 
 export interface ShoppingResult {
   title: string;
@@ -21,12 +17,16 @@ export interface ShoppingResult {
 interface ShoppingResultsProps {
   results: ShoppingResult[];
   isMobile: boolean;
+  setResults: React.Dispatch<React.SetStateAction<ShoppingResult[]>>;
 }
 
 const ShoppingResults: React.FC<ShoppingResultsProps> = ({
   results,
   isMobile,
+  setResults,
 }) => {
+  console.log("ShoppingResults props:", { results, isMobile });
+
   const [expandedItems, setExpandedItems] = useState<{
     [key: number]: boolean;
   }>({});
@@ -46,7 +46,7 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({
   };
 
   const renderPlaceholders = () => {
-    const placeholderCount = isMobile ? 3 : 5;
+    const placeholderCount = 5;
     return Array(placeholderCount)
       .fill(null)
       .map((_, index) => (
@@ -54,7 +54,7 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({
           key={index}
           style={{
             borderColor: "#ddbc69",
-            opacity: 0.4 - index * (0.4 / placeholderCount),
+            opacity: 0.3 - index * (0.25 / placeholderCount),
           }}
           className={`mb-4 p-3 bg-white rounded-lg shadow-md dark:bg-card border ${
             isMobile ? "text-sm" : "text-base"
@@ -85,6 +85,10 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({
       ));
   };
 
+  const clearResults = () => {
+    setResults([]);
+  };
+
   return (
     <ScrollAreaPrimitive.Root
       className="overflow-hidden h-full"
@@ -96,9 +100,20 @@ const ShoppingResults: React.FC<ShoppingResultsProps> = ({
             isMobile ? "text-sm" : "text-base"
           }`}
         >
-          <h3 className="text-xl font-light font-serif mb-4 dark:text-white text-center">
-            Shopping Results
-          </h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-light font-serif dark:text-white">
+              Shopping Results
+            </h3>
+            <Button
+              onClick={clearResults}
+              variant="ghost"
+              size="sm"
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <X className="w-4 h-4 mr-1" />
+              Clear
+            </Button>
+          </div>
           {results && results.length > 0
             ? results.map((item, index) => (
                 <div

@@ -12,29 +12,19 @@ import Chat, { ChatProps } from "./chat";
 import { RightPanel } from "../rightPanel";
 import FeedbackModal from "./feedback-modal";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-export interface ShoppingResult {
-  title: string;
-  price: string;
-  link: string;
-  thumbnail: string;
-  formula: string;
-}
+import { ShoppingResult } from "./shopping-results";
 
 interface ChatLayoutProps {
-  defaultCollapsed?: boolean;
-  navCollapsedSize: number;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   shoppingResults?: ShoppingResult[];
   resetChat: () => void;
   isCollapsed: boolean;
+  setShoppingResults: React.Dispatch<React.SetStateAction<ShoppingResult[]>>;
 }
 
 type MergedProps = ChatLayoutProps & ChatProps;
 
 export function ChatLayout({
-  defaultCollapsed = false,
-  navCollapsedSize,
   messages,
   input,
   handleInputChange,
@@ -49,6 +39,7 @@ export function ChatLayout({
   shoppingResults,
   resetChat,
   isCollapsed,
+  setShoppingResults,
 }: MergedProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -114,17 +105,23 @@ export function ChatLayout({
             isCollapsed={false}
             isMobile={true}
             shoppingResults={shoppingResults || []}
+            setShoppingResults={setShoppingResults}
           />
         </div>
         <button
           onClick={() => setIsMobileRightPanelOpen(!isMobileRightPanelOpen)}
-          className="fixed top-1/2 transform -translate-y-1/2 bg-accent text-white p-2 rounded-l-md transition-all duration-300 ease-in-out"
+          className="fixed top-1/2 transform -translate-y-1/2 bg-accent text-white p-1 rounded-l-md transition-all duration-300 ease-in-out"
           style={{
             right: isMobileRightPanelOpen ? "calc(85% - 1px)" : "0",
             zIndex: 60,
+            width: "25px", // Adjust this value to make it skinnier
           }}
         >
-          {isMobileRightPanelOpen ? <ChevronRight /> : <ChevronLeft />}
+          {isMobileRightPanelOpen ? (
+            <ChevronRight size={20} />
+          ) : (
+            <ChevronLeft size={20} />
+          )}
         </button>
       </div>
     );
@@ -177,6 +174,7 @@ export function ChatLayout({
           isCollapsed={false}
           isMobile={false}
           shoppingResults={shoppingResults || []}
+          setShoppingResults={setShoppingResults}
         />
       </ResizablePanel>
     </ResizablePanelGroup>

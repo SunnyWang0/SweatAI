@@ -16,7 +16,7 @@ export function RightPanel({ isMobile, shoppingResults }: RightPanelProps) {
     <div className={cn("bg-gray-50 dark:bg-card h-full", isMobile && "w-full")}>
       <ScrollArea className="flex-grow">
         <div className="h-full">
-          <ShoppingResults results={shoppingResults} />
+          <ShoppingResults results={shoppingResults} isMobile={false} />
         </div>
       </ScrollArea>
     </div>

@@ -1,8 +1,6 @@
 "use client";
 
 import { ChatLayout } from "../components/chat/chat-layout";
-import UsernameForm from "../components/username-form";
-import { ChatRequestOptions } from "ai";
 import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -42,6 +40,7 @@ export default function Home() {
 
   const resetChat = () => {
     setMessages([]);
+    setInput(""); // Add this line to clear the input
     setChatId(uuidv4());
     localStorage.removeItem(`chat_${chatId}`);
   };

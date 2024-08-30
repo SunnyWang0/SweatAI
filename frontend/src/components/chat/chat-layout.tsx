@@ -106,7 +106,7 @@ export function ChatLayout({
           />
         )}
         <div
-          className={`fixed top-0 right-0 h-full w-[70%] bg-white shadow-lg transition-transform duration-300 ease-in-out z-50 ${
+          className={`fixed top-0 right-0 h-full w-[85%] bg-white shadow-lg transition-transform duration-300 ease-in-out z-50 ${
             isMobileRightPanelOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -120,7 +120,7 @@ export function ChatLayout({
           onClick={() => setIsMobileRightPanelOpen(!isMobileRightPanelOpen)}
           className="fixed top-1/2 transform -translate-y-1/2 bg-accent text-white p-2 rounded-l-md transition-all duration-300 ease-in-out"
           style={{
-            right: isMobileRightPanelOpen ? "calc(70% - 1px)" : "0",
+            right: isMobileRightPanelOpen ? "calc(85% - 1px)" : "0",
             zIndex: 60,
           }}
         >

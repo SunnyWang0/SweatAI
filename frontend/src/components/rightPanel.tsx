@@ -9,14 +9,23 @@ interface RightPanelProps {
   isCollapsed: boolean;
   isMobile: boolean;
   shoppingResults: ShoppingResult[];
+  setShoppingResults: React.Dispatch<React.SetStateAction<ShoppingResult[]>>;
 }
 
-export function RightPanel({ isMobile, shoppingResults }: RightPanelProps) {
+export function RightPanel({
+  isMobile,
+  shoppingResults,
+  setShoppingResults,
+}: RightPanelProps) {
   return (
     <div className={cn("bg-gray-50 dark:bg-card h-full", isMobile && "w-full")}>
       <ScrollArea className="flex-grow">
         <div className="h-full">
-          <ShoppingResults results={shoppingResults} />
+          <ShoppingResults
+            results={shoppingResults}
+            isMobile={isMobile}
+            setResults={setShoppingResults}
+          />
         </div>
       </ScrollArea>
     </div>

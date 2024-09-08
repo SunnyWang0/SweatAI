@@ -5,6 +5,7 @@ import { ShoppingResult } from "../../../components/chat/chat-layout";
 import { Message } from "ai";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const ClaudeClient = new Anthropic({
   apiKey: ANTHROPIC_API_KEY!,
 });

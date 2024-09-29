@@ -1,0 +1,25 @@
+Slide 1:
+- One-Liner Problem
+
+Slide 2:
+- One-Liner Solution
+
+Slide 3:
+- User Validation
+
+Slide 4:
+- Product
+    What is the effect of the product on the user?
+
+Slide 5:
+- Traction
+
+Slide 6:
+- Market Size
+
+Slide 7:
+- Competition
+
+Slide 8:
+- Team
+    Focus on what you have acheived, less where you graduated/worked

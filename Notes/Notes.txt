@@ -1,0 +1,5 @@
+- Make it more personalized
+    - Add user profile and use it as context for the model
+- Cheapest does not mean lowest price, it should mena best value
+- People want recommendaitons, not to compare products
+- Track click through rate of the product recommendations

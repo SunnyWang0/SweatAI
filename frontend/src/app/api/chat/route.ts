@@ -1,127 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Anthropic } from "@anthropic-ai/sdk";
 import OpenAI from 'openai';
 import { ShoppingResult } from "../../../components/chat/chat-layout";
 import { Message } from "ai";
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const ClaudeClient = new Anthropic({
-  apiKey: ANTHROPIC_API_KEY!,
-});
 
-const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
-const PerplexityClient = new OpenAI({
-  apiKey: PERPLEXITY_API_KEY!,
-  baseURL: "https://api.perplexity.ai",
-});
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-const shopper_system_message = `
-You are SweatAI, an expert fitness supplement advisor. Provide concise, research-backed responses focused solely on supplements.
+const analyzerSystemMessage = `
+You are an analyzer for SweatAI, a fitness supplement advisor. Your task is to analyze user input and determine which functions should be called next. Output a JSON object with boolean values for the following tags:
+- greeting: User is greeting or starting a conversation
+- aboutSweat: User is asking about SweatAI
+- searchForProduct: User is looking for a specific product or supplement
+- refineProductSearch: User wants more specific information about a product
+- learnMore: User wants to learn more about supplements in general
+- unrelatedRequest: User's request is unrelated to fitness supplements
 
-CORE RULES:
-1. Discuss ONLY fitness supplements.
-2. Include specific research statistics for ALL claims.
-3. Recommend ingredients, NEVER brands.
-4. Be concise yet informative. Minimize line breaks.
-5. Generate invisible queries for purchase interests.
-6. NEVER output anything after the query terms.
-
-RESPONSE STRUCTURE:
-• Use compact, single-line bullet points (•) for lists.
-• Separate main ideas with single line breaks.
-• Combine related information into single lines where possible.
-• Use parentheses for additional info to keep lines compact.
-
-RESPONSE TYPES:
-1. Supplement Inquiries:
-• State key benefits with percentages, dosage, timing, side effects, and overall efficacy in a tight paragraph.
-• Use bullet points only if absolutely necessary for clarity.
-
-2. Purchase Intentions:
-• For vague requests: Ask concise, pointed questions about goals and preferences on a single line.
-• For specific requests: List top 2-3 evidence-based ingredients with brief stats.
-• Always include an invisible query.
-
-3. Off-Topic Requests:
-• Redirect to supplements in a single, concise sentence.
-
-EXAMPLES:
-User: "Tell me about creatine."
-You: "Creatine monohydrate: Increases muscle strength 5-10%. Dose: 3-5g daily. 80% see benefits within 4 weeks. Side effects (e.g., bloating) in <5%. Highly effective for strength and muscle growth with resistance training."
-<<QUERY>>creatine monohydrate 5g
-
-User: "I want a pre-workout."
-You: "To recommend the best pre-workout, I need to know: 1) Main goal? (energy, endurance, strength) 2) Any concerns? (e.g., caffeine sensitivity) 3) Usage frequency?"
-
-User: "Energy and strength, no caffeine issues, 3x weekly."
-You: "Consider: • Caffeine (3-6mg/kg, +7-10% power) • Beta-alanine (3-5g, +2.5% endurance) • Citrulline malate (6-8g, +7% strength). Take 30-60 min pre-workout for best results."
-<<QUERY>>caffeine 200mg beta-alanine 3.2g citrulline-malate 6g
-
-User: "Best diet for weight loss?"
-You: "As a supplement advisor, I focus on supplements, not diets. Are you interested in any supplements that might support your fitness goals?"
-
-QUERY GENERATION:
-• Format: <<QUERY>>ingredient1 amount1 ingredient2 amount2
-• Generate for purchase interests or specific inquiries.
-• Queries are invisible. Never mention or explain them.
-• ALWAYS place the query at the very end of your response.
-• NEVER output any text after the query terms.
-
-CRITICAL:
-• ONLY discuss fitness supplements. • EVERY claim must have a specific statistic. • Be concise but informative. • Ask questions to clarify vague requests. • NEVER mention brands or products. • DON'T explain the query generation process. • NEVER output anything after the query terms.
-
-Your mission: Deliver swift, evidence-based supplement guidance, strictly within your expertise, in the most compact form possible while maintaining clarity. Always end your response with the query when appropriate, and never add any text after it.
-
+Example output:
+{
+  "greeting": false,
+  "aboutSweat": false,
+  "searchForProduct": true,
+  "refineProductSearch": false,
+  "learnMore": false,
+  "unrelatedRequest": false
+}
 `;
 
-const scraper_system_message = `
-You are an information extraction system for fitness supplement product pages. Your SOLE purpose is to extract and present specific product details in a precise format. Follow these guidelines strictly:
-
-CORE PRINCIPLES:
-1. ONLY extract information related to fitness supplements.
-2. ALWAYS present information in specified bullet point lists.
-3. NEVER include introductory text, explanations, or commentary.
-4. If information is not found, output an empty list for that section.
-5. ONLY output the bullet point lists, nothing else.
-
-EXTRACTION TASKS:
-
-1. Basic Product Information:
-   • Product Name
-   • Serving Size
-   • Servings Per Container
-
-2. Ingredients List:
-   • Ingredient Name (Amount)
-   • Another Ingredient (Amount)
-   • Next Ingredient (Amount)
-   - Include only ingredients and amounts.
-   - Retain trademark symbols (®, ™) and original spelling/capitalization.
-
-3. Key Benefits/Features:
-   • Benefit 1
-   • Benefit 2
-   • Feature 1
-   • Feature 2
-   - Focus on scientifically-backed claims related to fitness and health.
-
-4. Usage Information:
-   • Recommended Use: [usage instructions]
-
-CRITICAL RULES:
-- Output ONLY the bullet point lists.
-- DO NOT include any text before, between, or after the lists.
-- If the page is not for a fitness supplement, output nothing.
-- NEVER explain or comment on the extraction process or results.
-
-REMEMBER:
-- Your function is SOLELY to extract and list information.
-- NEVER add any commentary or explanations.
-- If a section has no relevant information, leave it as an empty list.
-
-Your output should consist ONLY of the specified bullet point lists, with absolutely no other text.
-`;
+async function callOpenAI(systemMessage: string, messages: Message[], model: string, stream: boolean, temperature: number, max_tokens: number) {
+  return openai.chat.completions.create({
+    model: model,
+    messages: [
+      { role: "system", content: systemMessage },
+      ...messages
+    ],
+    stream: stream,
+    temperature: temperature,
+    max_tokens: max_tokens,
+  });
+}
 
 async function getRequestGoogleShopping(query: string) {
   const url = "https://www.searchapi.io/api/v1/search";
@@ -144,9 +61,34 @@ async function getRequestGoogleShopping(query: string) {
   }
 }
 
-async function scrapeJina(url: string): Promise<string> {
-  const response = await fetch("https://r.jina.ai/" + url);
-  return response.text();
+async function greeting(messages: Message[]) {
+  const systemMessage = "You are a friendly greeter for SweatAI. Respond to the user's greeting warmly and ask how you can help with their supplement needs.";
+  return callOpenAI(systemMessage, messages, "gpt-4o-mini", true, 0.7, 300);
+}
+
+async function aboutSweat(messages: Message[]) {
+  const systemMessage = "You provide information about SweatAI. Explain that SweatAI is an AI-powered fitness supplement advisor that helps users find the best supplements based on scientific research.";
+  return callOpenAI(systemMessage, messages, "gpt-4o-mini", true, 0.7, 300);
+}
+
+async function searchForProduct(messages: Message[]) {
+  const systemMessage = "You are a product search expert. Help the user find specific supplements or products based on their needs and preferences.";
+  return callOpenAI(systemMessage, messages, "o1-mini", true, 0.7, 300);
+}
+
+async function refineProductSearch(messages: Message[]) {
+  const systemMessage = "You help refine product searches. Ask specific questions to narrow down the user's preferences and provide more targeted supplement recommendations.";
+  return callOpenAI(systemMessage, messages, "o1-mini", true, 0.7, 300);
+}
+
+async function learnMore(messages: Message[]) {
+  const systemMessage = "You are a supplement education expert. Provide detailed, scientific information about various fitness supplements, their benefits, and potential side effects.";
+  return callOpenAI(systemMessage, messages, "o1-mini", true, 0.7, 300);
+}
+
+async function unrelatedRequest(messages: Message[]) {
+  const systemMessage = "You politely redirect unrelated requests back to fitness supplements. Explain that you're specialized in fitness supplements and offer to help with any supplement-related questions.";
+  return callOpenAI(systemMessage, messages, "gpt-4o-mini", true, 0.7, 300);
 }
 
 export async function POST(req: NextRequest) {
@@ -156,34 +98,51 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const perplexityMessages = messages.map((msg: Message) => ({
-          role: msg.role,
-          content: msg.content,
-        }));
-        const stream = await PerplexityClient.chat.completions.create({
-          model: "llama-3.1-sonar-small-128k-online",
-          messages: [
-            { role: "system", content: shopper_system_message },
-            ...perplexityMessages
+        // Analyze user input
+        const analyzerResponse = await callOpenAI(
+          analyzerSystemMessage,
+          [
+            { role: "user", content: messages[messages.length - 1].content },
+            { role: "assistant", content: "Here is the requested json with the boolean values : {" }
           ],
-          stream: true,
-          temperature: 0.6, 
-          max_tokens: 2048, 
-          top_p: 0.9,
-        });
+          "gpt-4o-mini",
+          false,
+          0.1,  
+          150
+        );
+
+        const responseContent = '{' + (analyzerResponse.choices[0]?.message?.content || "");
+        const jsonEndIndex = responseContent.lastIndexOf('}') + 1;
+        const cleanedJson = responseContent.substring(0, jsonEndIndex);
+        let analysis;
+        try {
+          analysis = JSON.parse(cleanedJson);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          analysis = {};
+        }
+
+        // Call appropriate function based on analysis
+        let functionStream;
+        if (analysis.greeting) functionStream = await greeting(messages);
+        else if (analysis.aboutSweat) functionStream = await aboutSweat(messages);
+        else if (analysis.searchForProduct) functionStream = await searchForProduct(messages);
+        else if (analysis.refineProductSearch) functionStream = await refineProductSearch(messages);
+        else if (analysis.learnMore) functionStream = await learnMore(messages);
+        else if (analysis.unrelatedRequest) functionStream = await unrelatedRequest(messages);
+        else functionStream = await unrelatedRequest(messages); // Default fallback
 
         let fullResponse = "";
         let stopStreaming = false;
 
-        for await (const chunk of stream) {
-          if (chunk.choices[0].delta.content) {
+        for await (const chunk of functionStream) {
+          if (chunk.choices[0]?.delta?.content) {
             const content = chunk.choices[0].delta.content;
             fullResponse += content;
 
             if (!stopStreaming) {
               if (content.includes("<")) {
                 stopStreaming = true;
-                // Send the last part of the response before "<"
                 const lastValidPart = fullResponse.split("<")[0];
                 controller.enqueue(
                   encoder.encode(
@@ -217,29 +176,12 @@ export async function POST(req: NextRequest) {
         if (query) {
           const shoppingResults = await getRequestGoogleShopping(query);
           if (shoppingResults) {
-            for (const item of shoppingResults.slice(0, 4)) { //Number of results to display
-              // const scrapedContent = await scrapeJina(item.link);
-              // const formulaResponse = await ClaudeClient.messages.create({
-              //   model: "claude-3-haiku-20240307",
-              //   max_tokens: 4096,
-              //   temperature: 0.1,
-              //   system: scraper_system_message,
-              //   messages: [
-              //     {
-              //       role: "user",
-              //       content: scrapedContent,
-              //     },
-              //   ],
-              // });
-
-              // const formula = (formulaResponse.content[0] as { text: string }).text;
-
+            for (const item of shoppingResults.slice(0, 4)) {
               const result: ShoppingResult = {
                 title: item.title,
                 price: item.price,
                 link: item.link,
                 thumbnail: item.thumbnail,
-                // formula: formula.trim(),
                 formula: "Coming Soon"
               };
               controller.enqueue(

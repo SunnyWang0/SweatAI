@@ -103,34 +103,59 @@ export async function POST(req: NextRequest) {
           analyzerSystemMessage,
           [
             { role: "user", content: messages[messages.length - 1].content },
-            { role: "assistant", content: "Here is the requested json with the boolean values : {" }
+            { role: "assistant", content: "Here is the requested JSON with the boolean values:" }
           ],
           "gpt-4o-mini",
           false,
           0.1,  
           150
         );
+        
+        const responseContent = analyzerResponse.choices[0]?.message?.content || "";
 
-        const responseContent = '{' + (analyzerResponse.choices[0]?.message?.content || "");
-        const jsonEndIndex = responseContent.lastIndexOf('}') + 1;
-        const cleanedJson = responseContent.substring(0, jsonEndIndex);
-        let analysis;
+        let cleanedJson = responseContent.trim();
+        // Remove any text before the first '{'
+        const jsonStartIndex = cleanedJson.indexOf('{');
+        if (jsonStartIndex !== -1) {
+          cleanedJson = cleanedJson.substring(jsonStartIndex);
+        }
+
+        let analysis = {};
         try {
           analysis = JSON.parse(cleanedJson);
+          console.log("Parsed analysis:", analysis);
         } catch (error) {
           console.error("Error parsing JSON:", error);
-          analysis = {};
+          console.error("Attempted to parse:", cleanedJson);
         }
 
         // Call appropriate function based on analysis
         let functionStream;
-        if (analysis.greeting) functionStream = await greeting(messages);
-        else if (analysis.aboutSweat) functionStream = await aboutSweat(messages);
-        else if (analysis.searchForProduct) functionStream = await searchForProduct(messages);
-        else if (analysis.refineProductSearch) functionStream = await refineProductSearch(messages);
-        else if (analysis.learnMore) functionStream = await learnMore(messages);
-        else if (analysis.unrelatedRequest) functionStream = await unrelatedRequest(messages);
-        else functionStream = await unrelatedRequest(messages); // Default fallback
+        let calledFunction = "unknown";
+        if (analysis.greeting) {
+          functionStream = await greeting(messages);
+          calledFunction = "greeting";
+        } else if (analysis.aboutSweat) {
+          functionStream = await aboutSweat(messages);
+          calledFunction = "aboutSweat";
+        } else if (analysis.searchForProduct) {
+          functionStream = await searchForProduct(messages);
+          calledFunction = "searchForProduct";
+        } else if (analysis.refineProductSearch) {
+          functionStream = await refineProductSearch(messages);
+          calledFunction = "refineProductSearch";
+        } else if (analysis.learnMore) {
+          functionStream = await learnMore(messages);
+          calledFunction = "learnMore";
+        } else if (analysis.unrelatedRequest) {
+          functionStream = await unrelatedRequest(messages);
+          calledFunction = "unrelatedRequest";
+        } else {
+          functionStream = await unrelatedRequest(messages); // Default fallback
+          calledFunction = "unrelatedRequest (default)";
+        }
+
+        console.log("Called function:", calledFunction);
 
         let fullResponse = "";
         let stopStreaming = false;

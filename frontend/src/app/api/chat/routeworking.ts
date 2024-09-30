@@ -4,17 +4,7 @@ import OpenAI from 'openai';
 import { ShoppingResult } from "../../../components/chat/chat-layout";
 import { Message } from "ai";
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const ClaudeClient = new Anthropic({
-  apiKey: ANTHROPIC_API_KEY!,
-});
-
-const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
-const PerplexityClient = new OpenAI({
-  apiKey: PERPLEXITY_API_KEY!,
-  baseURL: "https://api.perplexity.ai",
-});
 
 const analyzerSystemMessage = `
 You are an analyzer for SweatAI, a fitness supplement advisor. Your task is to analyze user input and determine which functions should be called next. Output a JSON object with boolean values for the following tags:

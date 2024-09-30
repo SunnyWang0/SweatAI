@@ -101,13 +101,19 @@ export async function POST(req: NextRequest) {
         // Analyze user input
         const analyzerResponse = await callOpenAI(
           analyzerSystemMessage,
-          [{ role: "user", content: messages[messages.length - 1].content }],
+          [
+            { role: "user", content: messages[messages.length - 1].content },
+            { role: "assistant", content: "Here is the requested json with the boolean values : {" }
+          ],
           "gpt-4o-mini",
           0.1,
           150
         );
 
-        const analysis = JSON.parse(analyzerResponse.choices[0].message.content || "{}");
+        const responseContent = '{' + (analyzerResponse.choices[0].message.content || "");
+        const jsonEndIndex = responseContent.lastIndexOf('}') + 1;
+        const cleanedJson = responseContent.substring(0, jsonEndIndex);
+        const analysis = JSON.parse(cleanedJson);
 
         // Call appropriate function based on analysis
         let functionStream;

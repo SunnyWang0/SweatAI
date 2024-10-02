@@ -2,8 +2,11 @@ Product Hunt for B2B Software
 
 2 sides of clients:
 
-Businesses
+Businesses:
+
+- Offer AI to find solutions from problems
+- They know what they want to solve but not how
 
 
+Solutions:
 
-Solutions
